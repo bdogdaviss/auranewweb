@@ -22,14 +22,23 @@ import (
 var (
 	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "AUF161yb2pAbNkVt-Hnaka0T2aCdPjC8Peaz5P8LHaeEzFdxANQ4Nq3bHSZwO_nLmXkGqK93CnkrVLzE")
 	paypalSecret   = getEnv("PAYPAL_SECRET", "EBCPsXsAV5sNAu-QwCT4H5u8jjyawKS6vZ_LxnDxoZ0VZ0kmZlmVLhV_wKgRUnyEOnOsTQkGlWui1fg6")
-	paypalBaseURL  = getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com") // Use https://api-m.paypal.com for live
+	paypalBaseURL  = normalizePayPalBaseURL(getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com")) // Use https://api-m.paypal.com for live
 )
 
 func getEnv(key, fallback string) string {
-	if val := os.Getenv(key); val != "" {
+	if val := strings.TrimSpace(os.Getenv(key)); val != "" {
 		return val
 	}
 	return fallback
+}
+
+func normalizePayPalBaseURL(baseURL string) string {
+	clean := strings.TrimSpace(baseURL)
+	clean = strings.TrimRight(clean, "/")
+	if clean == "" {
+		return "https://api-m.paypal.com"
+	}
+	return clean
 }
 
 // Enhanced Models
