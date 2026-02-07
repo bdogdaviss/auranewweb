@@ -881,34 +881,34 @@
     </div>
 
     <!-- Aura Chat Bot -->
-    <div id="aura-chat-bubble" onclick="auraChat.toggle()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-aura-600 hover:bg-aura-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 hover:scale-110" style="box-shadow: 0 0 20px rgba(16,185,129,0.3);">
-        <svg id="chat-icon-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <svg id="chat-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <div id="aura-chat-bubble" onclick="auraChat.toggle()" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-200" style="background:#2a2a2a; border:1px solid #333;">
+        <svg id="chat-icon-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e5e5e5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg id="chat-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e5e5e5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
 
-    <div id="aura-chat-window" class="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden transform scale-0 origin-bottom-right transition-transform duration-300" style="background:#0d0d14; border:1px solid rgba(16,185,129,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 40px rgba(16,185,129,0.1);">
+    <div id="aura-chat-window" class="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden transform scale-0 origin-bottom-right transition-transform duration-200" style="background:#1a1a1a; border:1px solid #2a2a2a;">
         <!-- Header -->
-        <div class="px-5 py-4 flex items-center gap-3" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(10,10,15,0.9)); border-bottom: 1px solid rgba(255,255,255,0.06);">
-            <img src="/static/images/icon.ico" alt="Aura" class="w-9 h-9 rounded-full ring-2 ring-aura-500/30" />
+        <div class="px-5 py-4 flex items-center gap-3" style="border-bottom:1px solid #2a2a2a;">
+            <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg" />
             <div class="flex-1">
-                <p class="font-semibold text-sm">Aura Support</p>
-                <p class="text-xs text-aura-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-aura-500 rounded-full inline-block"></span> Online</p>
+                <p class="font-medium text-sm text-white">Aura Support</p>
+                <p class="text-xs text-gray-500 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#4ade80;"></span> Online</p>
             </div>
-            <button onclick="auraChat.toggle()" class="text-gray-400 hover:text-white transition p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <button onclick="auraChat.toggle()" class="text-gray-500 hover:text-gray-300 transition p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
 
         <!-- Messages -->
-        <div id="aura-chat-messages" class="px-4 py-4 space-y-3 overflow-y-auto" style="height: 340px; scrollbar-width: thin; scrollbar-color: #15803d transparent;">
+        <div id="aura-chat-messages" class="px-4 py-4 space-y-3 overflow-y-auto" style="height: 360px; scrollbar-width: thin; scrollbar-color: #333 transparent;">
         </div>
 
         <!-- Input -->
-        <div class="px-4 py-3" style="border-top: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.3);">
+        <div class="px-4 py-3" style="border-top:1px solid #2a2a2a;">
             <div class="flex items-center gap-2">
-                <input id="aura-chat-input" type="text" placeholder="Type a question..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500 transition" onkeydown="if(event.key==='Enter')auraChat.sendUserMessage()" />
-                <button onclick="auraChat.sendUserMessage()" class="bg-aura-600 hover:bg-aura-500 p-2.5 rounded-xl transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <input id="aura-chat-input" type="text" placeholder="Type a question..." class="flex-1 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none transition" style="background:#222; border:1px solid #333;" onkeydown="if(event.key==='Enter')auraChat.sendUserMessage()" />
+                <button onclick="auraChat.sendUserMessage()" class="p-2.5 rounded-lg transition" style="background:#333;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
             </div>
         </div>
@@ -938,7 +938,7 @@
                 ]
             },
             which_plan: {
-                text: "We have 3 plans:\n\n<b>Free</b> - Basic optimization, great for trying it out.\n\n<b>Lifetime Pro ($15)</b> - Full AI optimization, network tuning, priority support, and lifetime updates. Most popular!\n\n<b>Team License ($149.99)</b> - Pro features for up to 10 PCs. Perfect for teams and gaming houses.",
+                text: "We have 3 plans:\n\n<b>Free</b> — Basic optimization, great for trying it out.\n\n<b>Lifetime Pro ($15)</b> — Full AI optimization, network tuning, priority support, and lifetime updates. Most popular!\n\n<b>Team License ($149.99)</b> — Pro features for up to 10 PCs. Perfect for teams and gaming houses.",
                 followUp: [
                     { label: 'What does Pro include?', key: 'pro_features' },
                     { label: 'Take me to pricing', key: 'go_pricing' },
@@ -954,7 +954,7 @@
                 ]
             },
             requirements: {
-                text: "Aura works on:\n\n• <b>Windows 10</b> or <b>Windows 11</b>\n• 4GB RAM minimum\n• 100MB free disk space\n• Internet connection for activation\n\nNo special hardware required — it works on laptops and desktops alike!",
+                text: "Aura works on:\n\n• <b>Windows 10</b> or <b>Windows 11</b>\n• 4GB RAM minimum\n• 100MB free disk space\n• Internet connection for activation\n\nNo special hardware required — works on laptops and desktops.",
                 followUp: [
                     { label: 'Does it work on Mac?', key: 'mac' },
                     { label: 'Download now', key: 'go_download' },
@@ -969,7 +969,7 @@
                 ]
             },
             setup: {
-                text: "Getting started is easy:\n\n<b>1.</b> Download Aura from our download page\n<b>2.</b> Run the installer (aura-setup.exe)\n<b>3.</b> Open Aura and click \"Optimize\"\n<b>4.</b> That's it! Your PC is now optimized\n\nIf you run into issues, our Discord community can help.",
+                text: "Getting started is easy:\n\n<b>1.</b> Download Aura from our download page\n<b>2.</b> Run the installer (aura-setup.exe)\n<b>3.</b> Open Aura and click Optimize\n<b>4.</b> That's it — your PC is now optimized\n\nIf you run into issues, our Discord community can help.",
                 followUp: [
                     { label: 'Download now', key: 'go_download' },
                     { label: 'Join Discord', key: 'go_discord' },
@@ -984,7 +984,7 @@
                 ]
             },
             game_files: {
-                text: "No, never. Aura only optimizes <b>Windows system settings</b>, background processes, and network configurations. It does not modify, inject into, or interact with any game files whatsoever.",
+                text: "No, never. Aura only optimizes <b>Windows system settings</b>, background processes, and network configurations. It does not modify, inject into, or interact with any game files.",
                 followUp: [
                     { label: 'Is it safe?', key: 'safe' },
                     { label: 'Back to menu', key: 'menu' }
@@ -998,7 +998,7 @@
                 ]
             },
             banned: {
-                text: "No. Aura does <b>not</b> interact with any game process or files. It only adjusts Windows-level settings. It's no different from manually tweaking your PC settings — game anti-cheats have zero reason to flag it.",
+                text: "No. Aura does <b>not</b> interact with any game process or files. It only adjusts Windows-level settings. It's no different from manually tweaking your PC — anti-cheats have zero reason to flag it.",
                 followUp: [
                     { label: 'How does it work?', key: 'how_works' },
                     { label: 'Back to menu', key: 'menu' }
@@ -1068,9 +1068,9 @@
         function addBotMessage(html) {
             var container = document.getElementById('aura-chat-messages');
             var wrapper = document.createElement('div');
-            wrapper.className = 'flex gap-2 items-start';
-            wrapper.innerHTML = '<div class="w-7 h-7 rounded-full bg-aura-600 flex items-center justify-center flex-shrink-0 mt-0.5"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
-                '<div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-md px-4 py-2.5 text-sm text-gray-200 max-w-[80%] leading-relaxed">' + html.replace(/\n/g, '<br>') + '</div>';
+            wrapper.className = 'flex gap-2.5 items-start';
+            wrapper.innerHTML = '<div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:#222;"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
+                '<div style="background:#222; border-radius:12px; border-top-left-radius:4px; padding:10px 14px; max-width:80%; font-size:13px; line-height:1.5; color:#d4d4d4;">' + html.replace(/\n/g, '<br>') + '</div>';
             container.appendChild(wrapper);
             scrollToBottom();
         }
@@ -1078,8 +1078,8 @@
         function addUserMessage(text) {
             var container = document.getElementById('aura-chat-messages');
             var wrapper = document.createElement('div');
-            wrapper.className = 'flex justify-end';
-            wrapper.innerHTML = '<div class="bg-aura-600 rounded-2xl rounded-tr-md px-4 py-2.5 text-sm text-white max-w-[80%]">' + escapeHtml(text) + '</div>';
+            wrapper.style.cssText = 'display:flex; justify-content:flex-end;';
+            wrapper.innerHTML = '<div style="background:#2a2a2a; border-radius:12px; border-top-right-radius:4px; padding:10px 14px; max-width:80%; font-size:13px; color:#e5e5e5;">' + escapeHtml(text) + '</div>';
             container.appendChild(wrapper);
             scrollToBottom();
         }
@@ -1087,11 +1087,14 @@
         function showQuickReplies(options) {
             var container = document.getElementById('aura-chat-messages');
             var wrapper = document.createElement('div');
-            wrapper.className = 'aura-quick-replies flex flex-wrap gap-2 pl-9';
+            wrapper.className = 'aura-quick-replies';
+            wrapper.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; padding-left:36px;';
             options.forEach(function(opt) {
                 var btn = document.createElement('button');
-                btn.className = 'text-xs px-3 py-1.5 rounded-full border border-aura-500/40 text-aura-400 hover:bg-aura-600/20 hover:text-aura-300 transition';
+                btn.style.cssText = 'font-size:12px; padding:6px 12px; border-radius:8px; background:#222; border:1px solid #333; color:#a3a3a3; cursor:pointer; transition:all 0.15s;';
                 btn.textContent = opt.label;
+                btn.onmouseenter = function() { this.style.background = '#2a2a2a'; this.style.color = '#e5e5e5'; };
+                btn.onmouseleave = function() { this.style.background = '#222'; this.style.color = '#a3a3a3'; };
                 btn.onclick = function() { handleQuickReply(opt.key, opt.label); };
                 wrapper.appendChild(btn);
             });
@@ -1168,7 +1171,7 @@
                             setTimeout(function() { showQuickReplies(resp.followUp); }, 300);
                         }
                     } else {
-                        addBotMessage("I'm not sure about that one! Here are some things I can help with:");
+                        addBotMessage("I'm not sure about that one. Here are some things I can help with:");
                         setTimeout(function() { showQuickReplies(quickReplies); }, 300);
                     }
                 }, 800 + Math.random() * 600);
@@ -1179,12 +1182,12 @@
             var container = document.getElementById('aura-chat-messages');
             var wrapper = document.createElement('div');
             wrapper.id = 'aura-typing';
-            wrapper.className = 'flex gap-2 items-start';
-            wrapper.innerHTML = '<div class="w-7 h-7 rounded-full bg-aura-600 flex items-center justify-center flex-shrink-0 mt-0.5"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
-                '<div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-md px-4 py-3 flex gap-1">' +
-                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0s;"></span>' +
-                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0.2s;"></span>' +
-                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0.4s;"></span></div>';
+            wrapper.className = 'flex gap-2.5 items-start';
+            wrapper.innerHTML = '<div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:#222;"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
+                '<div style="background:#222; border-radius:12px; border-top-left-radius:4px; padding:12px 16px; display:flex; gap:4px;">' +
+                '<span style="width:6px;height:6px;background:#555;border-radius:50%;animation:auraDot 1.2s infinite 0s;"></span>' +
+                '<span style="width:6px;height:6px;background:#555;border-radius:50%;animation:auraDot 1.2s infinite 0.2s;"></span>' +
+                '<span style="width:6px;height:6px;background:#555;border-radius:50%;animation:auraDot 1.2s infinite 0.4s;"></span></div>';
             container.appendChild(wrapper);
             scrollToBottom();
         }
@@ -1209,9 +1212,9 @@
     })();
     </script>
     <style>
-        @keyframes auraBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-4px); }
+        @keyframes auraDot {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-3px); }
         }
     </style>
 
