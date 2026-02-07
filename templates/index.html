@@ -255,16 +255,16 @@
                         <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-aura-600 rounded-full text-xs font-bold flex items-center justify-center transform scale-0 transition-transform">0</span>
                     </button>
-                    
+
                     {{if .User}}
                     <div class="flex items-center gap-4">
                         <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
                         <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
                     </div>
                     {{else}}
-                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
-                    <a href="/register" class="btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold">
-                        Get Started
+                    <a href="https://discord.com/invite/4TBUw4nBFd" class="flex items-center gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+                        <img src="/static/images/discord.ico" alt="Discord" class="w-4 h-4" />
+                        Discord
                     </a>
                     {{end}}
                 </div>
@@ -623,28 +623,23 @@
             </div>
 
             <div class="flex flex-wrap justify-center gap-6">
-                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-900 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">W</div>
-                    <p class="font-semibold">Wagers</p>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
-                </div>
-                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-teal-600 to-emerald-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">K</div>
+<div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <img src="/static/images/kise.jpg" alt="Kise" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
                     <p class="font-semibold">Kise</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Token Pro</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-green-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">R</div>
+                    <img src="/static/images/rezy.jpeg" alt="Rezy" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
                     <p class="font-semibold">Rezy</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-teal-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">A</div>
+                    <img src="/static/images/ajerrs.jpg" alt="Ajerss" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
                     <p class="font-semibold">Ajerss</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-700 to-cyan-900 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">S</div>
+                    <img src="/static/images/sjay.jpeg" alt="Sjay" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
                     <p class="font-semibold">Sjay</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Content Creator</p>
                 </div>

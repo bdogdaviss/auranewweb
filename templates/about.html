@@ -53,7 +53,7 @@
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="/" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-xl text-white group-hover:bg-aura-700 transition-colors">A</div>
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
                     <span class="font-bold text-xl tracking-tight">Aura</span>
                 </a>
                 <div class="hidden md:flex items-center gap-8">
@@ -69,8 +69,10 @@
                         <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
                     </div>
                     {{else}}
-                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
-                    <a href="/register" class="bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-400 transition">Get Started</a>
+                    <a href="https://discord.com/invite/4TBUw4nBFd" class="flex items-center gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+                        <img src="/static/images/discord.ico" alt="Discord" class="w-4 h-4" />
+                        Discord
+                    </a>
                     {{end}}
                 </div>
             </div>
