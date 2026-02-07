@@ -30,20 +30,20 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #ffffff; line-height: 1.6; }
         html { scroll-behavior: smooth; }
-        ::selection { background: #15803d; color: white; }
+        ::selection { background: #059669; color: white; }
         .text-gradient {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .nav-blur { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-blur { background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .btn-green { background: #15803d; color: #fff; transition: all 0.3s ease; }
-        .btn-green:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4); }
+        .btn-green { background: #059669; color: #fff; transition: all 0.3s ease; }
+        .btn-green:hover { background: #10b981; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(16, 185, 129, 0.35); }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
     </style>
 </head>
 <body class="antialiased">
@@ -57,9 +57,9 @@
                     <span class="font-bold text-xl tracking-tight">Aura</span>
                 </a>
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
-                    <a href="/pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
-                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                    <a href="/" class="text-sm text-gray-400 hover:text-emerald-400 transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-emerald-400 transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-emerald-400 transition">Download</a>
                     <a href="/about" class="text-sm text-white transition font-semibold">About</a>
                 </div>
                 <div class="flex items-center gap-4">
@@ -70,7 +70,7 @@
                     </div>
                     {{else}}
                     <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
-                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">Get Started</a>
+                    <a href="/register" class="bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-400 transition">Get Started</a>
                     {{end}}
                 </div>
             </div>
@@ -140,7 +140,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-white/5">
+    <footer class="py-12 border-t border-white/10" style="background: #07070b;">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-3">
@@ -148,10 +148,10 @@
                     <span class="font-bold text-lg">Aura Optimizer</span>
                 </div>
                 <div class="flex gap-8 text-sm text-gray-400">
-                    <a href="#" class="hover:text-white transition">Privacy</a>
-                    <a href="#" class="hover:text-white transition">Terms</a>
-                    <a href="#" class="hover:text-white transition">Support</a>
-                    <a href="#" class="hover:text-white transition">Discord</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Privacy</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Terms</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Support</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Discord</a>
                 </div>
                 <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
             </div>

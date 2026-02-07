@@ -48,7 +48,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #000000;
+            background: #0a0a0f;
             color: #ffffff;
             line-height: 1.6;
         }
@@ -63,66 +63,68 @@
         }
         
         .text-gradient {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .glow-green {
-            box-shadow: 0 0 40px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
         }
-        
+
         .btn-primary {
-            background: #ffffff;
-            color: #000000;
+            background: #10b981;
+            color: #ffffff;
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
-            background: #22c55e;
+            background: #34d399;
             color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
         }
-        
+
         .btn-secondary {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             transition: all 0.3s ease;
         }
-        
+
         .btn-secondary:hover {
-            border-color: #22c55e;
-            color: #22c55e;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
         }
-        
+
         .btn-green {
-            background: #15803d;
+            background: #059669;
             color: #ffffff;
             transition: all 0.3s ease;
         }
-        
+
         .btn-green:hover {
-            background: #16a34a;
+            background: #10b981;
             transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.35);
         }
         
         .card-hover {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .card-hover:hover {
-            transform: translateY(-8px);
-            border-color: rgba(34, 197, 94, 0.3);
+            transform: translateY(-6px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.08);
         }
         
         .nav-blur {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(10, 10, 15, 0.85);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         
         .feature-card {
@@ -130,15 +132,17 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
         }
-        
+
         .feature-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(34, 197, 94, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(16, 185, 129, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.4);
         }
-        
+
         .pricing-popular {
-            background: linear-gradient(145deg, rgba(21, 128, 61, 0.1), rgba(0, 0, 0, 0.5));
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(10, 10, 15, 0.5));
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
         
         input:focus {
@@ -151,7 +155,7 @@
         }
         
         ::-webkit-scrollbar-track {
-            background: #000;
+            background: #0a0a0f;
         }
         
         ::-webkit-scrollbar-thumb {
@@ -239,10 +243,10 @@
                 </a>
                 
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#walkthrough" class="text-sm text-gray-400 hover:text-white transition">Walkthrough</a>
-                    <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
-                    <a href="#testimonials" class="text-sm text-gray-400 hover:text-white transition">Reviews</a>
-                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                    <a href="#walkthrough" class="text-sm text-gray-400 hover:text-emerald-400 transition">Walkthrough</a>
+                    <a href="#pricing" class="text-sm text-gray-400 hover:text-emerald-400 transition">Pricing</a>
+                    <a href="#testimonials" class="text-sm text-gray-400 hover:text-emerald-400 transition">Reviews</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-emerald-400 transition">Download</a>
                 </div>
                 
                 <div class="flex items-center gap-4">
@@ -270,7 +274,7 @@
     <!-- Hero Section -->
     <section class="relative pt-28 pb-20 overflow-hidden">
         <!-- Subtle background glow -->
-        <div class="absolute inset-0 bg-gradient-to-b from-aura-950/20 via-black to-black"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-[#0a0a0f] to-[#0a0a0f]"></div>
 
         <div class="relative max-w-6xl mx-auto px-6">
             <!-- Video Container -->
@@ -556,7 +560,7 @@
                 <div class="relative group">
                     {{if .IsPopular}}
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                        <span class="bg-aura-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                        <span class="bg-amber-500 text-black px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
                     </div>
                     {{end}}
                     
@@ -619,27 +623,27 @@
 
             <div class="flex flex-wrap justify-center gap-6">
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">W</div>
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-900 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">W</div>
                     <p class="font-semibold">Wagers</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">K</div>
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-teal-600 to-emerald-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">K</div>
                     <p class="font-semibold">Kise</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Token Pro</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">R</div>
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-green-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">R</div>
                     <p class="font-semibold">Rezy</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">A</div>
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-teal-800 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">A</div>
                     <p class="font-semibold">Ajerss</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
                 </div>
                 <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">S</div>
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-700 to-cyan-900 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-emerald-500/20">S</div>
                     <p class="font-semibold">Sjay</p>
                     <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Content Creator</p>
                 </div>
@@ -687,7 +691,7 @@
                 <!-- Review 1 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold">T</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-sm font-bold">T</div>
                         <div>
                             <p class="font-semibold text-sm">TurboFrag</p>
                             <p class="text-xs text-gray-500">12.01.2025</p>
@@ -706,7 +710,7 @@
                 <!-- Review 2 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-sm font-bold">D</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-emerald-700 flex items-center justify-center text-sm font-bold">D</div>
                         <div>
                             <p class="font-semibold text-sm">DxRival</p>
                             <p class="text-xs text-gray-500">28.02.2025</p>
@@ -725,7 +729,7 @@
                 <!-- Review 3 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-sm font-bold">K</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-800 flex items-center justify-center text-sm font-bold">K</div>
                         <div>
                             <p class="font-semibold text-sm">KrypticAim</p>
                             <p class="text-xs text-gray-500">15.03.2025</p>
@@ -744,7 +748,7 @@
                 <!-- Review 4 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-sm font-bold">V</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-700 flex items-center justify-center text-sm font-bold">V</div>
                         <div>
                             <p class="font-semibold text-sm">VexSnipes</p>
                             <p class="text-xs text-gray-500">02.05.2025</p>
@@ -763,7 +767,7 @@
                 <!-- Review 5 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-sm font-bold">N</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-emerald-700 flex items-center justify-center text-sm font-bold">N</div>
                         <div>
                             <p class="font-semibold text-sm">NightOps</p>
                             <p class="text-xs text-gray-500">19.06.2025</p>
@@ -782,7 +786,7 @@
                 <!-- Review 6 -->
                 <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">Z</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center text-sm font-bold">Z</div>
                         <div>
                             <p class="font-semibold text-sm">ZeroInput</p>
                             <p class="text-xs text-gray-500">08.08.2025</p>
@@ -811,7 +815,7 @@
 
     <!-- CTA Section -->
     <section class="py-24 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-aura-950/20 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/20 to-transparent"></div>
         <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 class="text-4xl sm:text-5xl font-bold mb-6">Ready to Boost Your FPS?</h2>
             <p class="text-xl text-gray-400 mb-8">Join 50,000+ gamers who've already made the switch. Start free, upgrade anytime.</p>
@@ -828,7 +832,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-white/5">
+    <footer class="py-12 border-t border-white/10" style="background: #07070b;">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-3">
@@ -836,10 +840,10 @@
                     <span class="font-bold text-lg">Aura Optimizer</span>
                 </div>
                 <div class="flex gap-8 text-sm text-gray-400">
-                    <a href="#" class="hover:text-white transition">Privacy</a>
-                    <a href="#" class="hover:text-white transition">Terms</a>
-                    <a href="#" class="hover:text-white transition">Support</a>
-                    <a href="#" class="hover:text-white transition">Discord</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Privacy</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Terms</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Support</a>
+                    <a href="#" class="hover:text-emerald-400 transition">Discord</a>
                 </div>
                 <p class="text-sm text-gray-600">© 2024 Aura Optimizer. All rights reserved.</p>
             </div>
