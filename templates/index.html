@@ -142,7 +142,8 @@
 
         .pricing-popular {
             background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(10, 10, 15, 0.5));
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.1), 0 0 80px rgba(16, 185, 129, 0.05);
         }
         
         input:focus {
@@ -278,7 +279,7 @@
 
         <div class="relative max-w-6xl mx-auto px-6">
             <!-- Video Container -->
-            <div class="relative rounded-2xl overflow-hidden border border-white/10 mb-16 fade-in" style="box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), 0 0 80px rgba(34, 197, 94, 0.08);">
+            <div class="relative rounded-2xl overflow-hidden border mb-16 fade-in" style="border-color: rgba(34, 197, 94, 0.2); box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), 0 0 100px rgba(16, 185, 129, 0.15), 0 0 40px rgba(34, 197, 94, 0.1);">
                 <video
                     autoplay
                     muted
@@ -296,7 +297,7 @@
 
             <!-- Text Content Below Video -->
             <div class="text-center">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aura-950/80 border border-aura-800 text-aura-400 text-sm mb-8 fade-in backdrop-blur-sm">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-aura-400 text-sm mb-8 fade-in backdrop-blur-sm" style="background: rgba(34, 197, 94, 0.1);">
                     <span class="w-2 h-2 bg-aura-500 rounded-full pulse-slow"></span>
                     Trusted by 50,000+ gamers worldwide
                 </div>
@@ -814,7 +815,7 @@
     </script>
 
     <!-- CTA Section -->
-    <section class="py-24 relative overflow-hidden">
+    <section class="py-24 relative overflow-hidden" style="background: #0a0a0f;">
         <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/20 to-transparent"></div>
         <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 class="text-4xl sm:text-5xl font-bold mb-6">Ready to Boost Your FPS?</h2>
