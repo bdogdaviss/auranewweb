@@ -1,0 +1,165 @@
+<!-- templates/about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Aura Optimizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d', 950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: #15803d; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-blur { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-green { background: #15803d; color: #fff; transition: all 0.3s ease; }
+        .btn-green:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-xl text-white group-hover:bg-aura-700 transition-colors">A</div>
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                    <a href="/about" class="text-sm text-white transition font-semibold">About</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">Get Started</a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Content -->
+    <div class="pt-32 pb-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-12 items-center mb-24">
+                <div>
+                    <h1 class="text-4xl sm:text-5xl font-bold mb-6">About Bdog & Aura<br>Optimizer.</h1>
+                    <div class="space-y-4 text-gray-400 leading-relaxed">
+                        <p>
+                            The Aura ecosystem brings together everything I've built — performance, precision, and purpose.
+                            <span class="text-white font-medium">I'm Bdog, a competitive Fortnite player</span> — with over $800 earned and a passion for helping gamers push their limits.
+                        </p>
+                        <p>
+                            Aura Optimizer isn't just software — it's my way of giving back to the gaming community. Every tweak, every FPS boost, and every clean UI is built for players like us — those chasing perfection, frame by frame.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 mt-8">
+                        <div>
+                            <div class="w-10 h-10 bg-aura-900/50 rounded-lg flex items-center justify-center mb-3">
+                                <i data-lucide="zap" class="w-5 h-5 text-aura-400"></i>
+                            </div>
+                            <h3 class="font-semibold mb-1">Faaast</h3>
+                            <p class="text-sm text-gray-400">Optimized for speed — just like my gameplay. Aura delivers instant boosts, smoother frames, and lower input delay.</p>
+                        </div>
+                        <div>
+                            <div class="w-10 h-10 bg-aura-900/50 rounded-lg flex items-center justify-center mb-3">
+                                <i data-lucide="cpu" class="w-5 h-5 text-aura-400"></i>
+                            </div>
+                            <h3 class="font-semibold mb-1">Powerful</h3>
+                            <p class="text-sm text-gray-400">Tailored optimizations that get the best out of any setup, from entry-level rigs to top-tier PCs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-aura-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=600&fit=crop"
+                         alt="Bdog"
+                         class="relative rounded-2xl shadow-2xl border border-white/10 grayscale hover:grayscale-0 transition duration-500">
+                </div>
+            </div>
+
+            <!-- Social Section -->
+            <div class="text-center">
+                <h2 class="text-2xl font-bold mb-2">Latest From @bdogfnx</h2>
+                <p class="text-gray-400 mb-8">Watch my latest content and subscribe for more</p>
+
+                <div class="glass rounded-2xl p-8 max-w-2xl mx-auto">
+                    <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="white">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 mb-4">Profile embed would appear here</p>
+                    <a href="https://tiktok.com/@bdogfnx" target="_blank" class="inline-flex items-center gap-2 btn-green px-6 py-3 rounded-lg font-medium">
+                        Follow @bdogfnx on TikTok
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-sm">A</div>
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

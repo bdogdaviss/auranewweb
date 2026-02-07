@@ -1,0 +1,184 @@
+<!-- templates/pricing.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d', 950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: #15803d; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-blur { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-green { background: #15803d; color: #fff; transition: all 0.3s ease; }
+        .btn-green:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4); }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-8px); border-color: rgba(34, 197, 94, 0.3); }
+        .pricing-popular { background: linear-gradient(145deg, rgba(21, 128, 61, 0.1), rgba(0, 0, 0, 0.5)); border: 1px solid rgba(34, 197, 94, 0.3); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
+                    <a href="/pricing" class="text-sm text-white transition font-semibold">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">Get Started</a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Pricing Content -->
+    <div class="pt-32 pb-24">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-4">Pick the Aura plan<br>that fits your needs</h1>
+                <p class="text-gray-400 text-lg">Choose a flexible plan with lifetime updates and 24/7 support</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                {{range .Products}}
+                <div class="relative group">
+                    {{if .IsPopular}}
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                        <span class="bg-aura-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    {{end}}
+
+                    <div class="{{if .IsPopular}}pricing-popular{{else}}glass{{end}} rounded-2xl p-8 h-full flex flex-col card-hover">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2">{{.Name}}</h3>
+                            <p class="text-gray-400 text-sm">{{.Description}}</p>
+                        </div>
+
+                        <div class="mb-6">
+                            {{if not .Price}}
+                            <span class="text-5xl font-bold">Free</span>
+                            {{else}}
+                            <span class="text-5xl font-bold">${{.Price}}</span>
+                            {{if .ComparePrice}}
+                            <span class="text-gray-500 line-through ml-2">${{.ComparePrice}}</span>
+                            {{end}}
+                            {{end}}
+                        </div>
+
+                        <ul class="space-y-4 mb-8 flex-1">
+                            {{range .Features}}
+                            <li class="flex items-center gap-3 text-sm text-gray-300">
+                                <i data-lucide="check" class="w-5 h-5 text-aura-500 flex-shrink-0"></i>
+                                <span>{{.}}</span>
+                            </li>
+                            {{end}}
+                        </ul>
+
+                        {{if not .Price}}
+                        <a href="/download" class="block w-full text-center border border-white/20 hover:border-aura-500 text-white py-3 rounded-xl font-semibold transition">
+                            Download Free
+                        </a>
+                        {{else}}
+                        <a href="/checkout?product={{.ID}}" class="block w-full {{if .IsPopular}}btn-green{{else}}border border-white/20 hover:border-aura-500 text-white{{end}} py-3 rounded-xl font-semibold text-center transition cursor-pointer">
+                            Get {{.Name}}
+                        </a>
+                        <div class="flex items-center justify-center gap-2 mt-3">
+                            <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" style="height: 18px;" />
+                            <span class="text-xs text-gray-500">Powered by
+                                <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" style="height: 0.75rem; vertical-align: middle;" />
+                            </span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+                {{end}}
+            </div>
+
+            <!-- Discord CTA -->
+            <div class="mt-16 glass rounded-2xl p-12 text-center">
+                <div class="w-16 h-16 bg-[#5865F2] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="message-circle" class="w-8 h-8 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-4">More questions?</h2>
+                <p class="text-gray-400 mb-6">Join our discord server, <span class="text-aura-400">Aura Optimizer</span>, feel free to ask us any questions you have!</p>
+                <a href="https://discord.com/invite/4TBUw4nBFd" target="_blank" class="inline-flex items-center gap-2 btn-green px-6 py-3 rounded-lg font-medium">
+                    Join Discord
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

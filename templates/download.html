@@ -1,0 +1,271 @@
+<!-- templates/download.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: #15803d; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-blur {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .btn-green {
+            background: #15803d;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .btn-green:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4);
+        }
+        .step-line { position: relative; }
+        .step-line::after {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 48px;
+            width: 2px;
+            height: calc(100% - 48px);
+            background: linear-gradient(to bottom, #22c55e, transparent);
+        }
+        .step-line:last-child::after { display: none; }
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                    <a href="/download" class="text-sm text-white transition font-semibold">Download</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">
+                        Get Started
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Download Content -->
+    <div class="pt-32 pb-24">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">Download <span class="text-gradient">Aura</span></h1>
+            <p class="text-gray-400 mb-12">Free to download. Pro features available.</p>
+
+            <div class="glass rounded-2xl p-8 mb-12">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aura-950 border border-aura-800 text-aura-400 text-sm mb-6">
+                    <span class="w-2 h-2 bg-aura-500 rounded-full animate-pulse"></span>
+                    Windows detected
+                </div>
+
+                <div>
+                    <a href="/static/downloads/aura-setup.exe" download class="inline-flex items-center justify-center gap-3 w-full sm:w-auto btn-green px-8 py-4 rounded-xl font-semibold text-lg mb-6">
+                        <i data-lucide="download" class="w-6 h-6"></i>
+                        Download for Windows
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-sm text-gray-400 mt-6 pt-6 border-t border-white/10">
+                    <div>
+                        <p class="text-gray-500 mb-1">Version</p>
+                        <p class="text-white font-medium">2.1.0</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1">Size</p>
+                        <p class="text-white font-medium">45 MB</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1">OS</p>
+                        <p class="text-white font-medium">Windows 10/11</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-white/10">
+                    <button class="text-aura-400 hover:text-aura-300 text-sm flex items-center justify-center gap-2 mx-auto">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        Verify download integrity
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Setup -->
+            <h2 class="text-2xl font-bold mb-8">Quick Setup</h2>
+            <div class="space-y-6 max-w-md mx-auto">
+                <div class="step-line flex gap-4 text-left">
+                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Download & Run</h3>
+                        <p class="text-sm text-gray-400">Run the installer as Administrator</p>
+                    </div>
+                </div>
+                <div class="step-line flex gap-4 text-left">
+                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Create Account</h3>
+                        <p class="text-sm text-gray-400">Sign up to sync your settings</p>
+                    </div>
+                </div>
+                <div class="step-line flex gap-4 text-left">
+                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-1">Start Optimizing</h3>
+                        <p class="text-sm text-gray-400">Run your first scan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Requirements -->
+            <h2 class="text-2xl font-bold mb-8 mt-16">System Requirements</h2>
+            <div class="grid sm:grid-cols-2 gap-6">
+                <div class="glass rounded-xl p-6 text-left">
+                    <h3 class="text-sm font-semibold text-gray-500 mb-4 uppercase tracking-wider">Minimum</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">OS</span>
+                            <span>Windows 10</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">CPU</span>
+                            <span>Dual-core 2 GHz</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">RAM</span>
+                            <span>4 GB</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Storage</span>
+                            <span>100 MB</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-6 text-left border border-aura-500/30">
+                    <h3 class="text-sm font-semibold text-aura-400 mb-4 uppercase tracking-wider">Recommended</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">OS</span>
+                            <span>Windows 11</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">CPU</span>
+                            <span>Quad-core 3 GHz+</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">RAM</span>
+                            <span>8 GB+</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Storage</span>
+                            <span>500 MB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

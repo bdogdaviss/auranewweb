@@ -1,0 +1,1001 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Optimizer - Boost Your Gaming Performance</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        ::selection {
+            background: #15803d;
+            color: white;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glow-green {
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #22c55e;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+        
+        .btn-green {
+            background: #15803d;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-green:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4);
+        }
+        
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .nav-blur {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+        
+        .pricing-popular {
+            background: linear-gradient(145deg, rgba(21, 128, 61, 0.1), rgba(0, 0, 0, 0.5));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #15803d;
+            border-radius: 4px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Walkthrough styles */
+        .walkthrough-container {
+            position: relative;
+            background: transparent;
+        }
+        .walkthrough-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(21, 128, 61, 0.15) 0%, rgba(16, 185, 129, 0.06) 40%, rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+        }
+        
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background: #22c55e;
+            width: 32px;
+        }
+        
+        .screenshot-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 60px rgba(34, 197, 94, 0.1);
+        }
+        
+        .screenshot-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .nav-arrow {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-arrow:hover {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#walkthrough" class="text-sm text-gray-400 hover:text-white transition">Walkthrough</a>
+                    <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                    <a href="#testimonials" class="text-sm text-gray-400 hover:text-white transition">Reviews</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleCart()" class="relative p-2 text-gray-400 hover:text-white transition">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-aura-600 rounded-full text-xs font-bold flex items-center justify-center transform scale-0 transition-transform">0</span>
+                    </button>
+                    
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold">
+                        Get Started
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-28 pb-20 overflow-hidden">
+        <!-- Subtle background glow -->
+        <div class="absolute inset-0 bg-gradient-to-b from-aura-950/20 via-black to-black"></div>
+
+        <div class="relative max-w-6xl mx-auto px-6">
+            <!-- Video Container -->
+            <div class="relative rounded-2xl overflow-hidden border border-white/10 mb-16 fade-in" style="box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), 0 0 80px rgba(34, 197, 94, 0.08);">
+                <video
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    class="w-full h-auto block"
+                    style="aspect-ratio: 16/9; object-fit: cover;"
+                >
+                    <source src="/static/videos/hero-bg.mp4" type="video/mp4">
+                </video>
+                <!-- Subtle gradient at bottom of video -->
+                <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
+            </div>
+
+            <!-- Text Content Below Video -->
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aura-950/80 border border-aura-800 text-aura-400 text-sm mb-8 fade-in backdrop-blur-sm">
+                    <span class="w-2 h-2 bg-aura-500 rounded-full pulse-slow"></span>
+                    Trusted by 50,000+ gamers worldwide
+                </div>
+
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 fade-in" style="animation-delay: 0.1s;">
+                    Optimize Your PC.<br>
+                    <span class="text-gradient">Dominate Every Game.</span>
+                </h1>
+
+                <p class="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 fade-in" style="animation-delay: 0.2s;">
+                    AI-powered system tuning that boosts FPS, reduces latency, and eliminates stuttering.
+                    One click. Instant results. Zero technical knowledge required.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 fade-in" style="animation-delay: 0.3s;">
+                    <a href="#pricing" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-2">
+                        <span>Get Aura Pro</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                    <a href="/download" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-lg">
+                        Download Free
+                    </a>
+                </div>
+
+                <div class="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500 fade-in" style="animation-delay: 0.4s;">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-aura-500"></i>
+                        <span>No credit card required</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-aura-500"></i>
+                        <span>Lifetime free tier</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-aura-500"></i>
+                        <span>Windows 10/11</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- System Walkthrough Section - NEW -->
+    <section id="walkthrough" class="py-24 walkthrough-container border-y border-aura-900/20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-gradient uppercase tracking-wider">Unleash Ultimate Performance</h2>
+                <p class="text-xl text-white font-semibold mb-2">Walkthrough</p>
+                <p class="text-gray-400">Let's take a quick tour of the app to help you get started.</p>
+            </div>
+
+            <!-- Walkthrough Content -->
+            <div class="max-w-5xl mx-auto">
+                <!-- Step Content -->
+                <div id="walkthrough-content" class="mb-8">
+                    <!-- Step 1: Dashboard -->
+                    <div class="walkthrough-step" data-step="1">
+                        <div class="flex flex-col lg:flex-row gap-8 items-center">
+                            <div class="lg:w-1/3 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-aura-600 rounded-lg flex items-center justify-center text-sm font-bold">1</span>
+                                    <h3 class="text-2xl font-bold">System Dashboard</h3>
+                                </div>
+                                <p class="text-gray-400">Monitor your system performance and optimization status in real-time. View RAM usage, system health, network latency, and hardware specifications at a glance.</p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Real-time performance metrics</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Hardware monitoring</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Optimization history</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-2/3">
+                                <div class="screenshot-container">
+                                    <img src="/static/images/newdashboard.png" alt="Aura Dashboard" onerror="this.src='https://via.placeholder.com/1200x700/0a0a0a/22c55e?text=Dashboard+Screenshot'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Optimizer -->
+                    <div class="walkthrough-step hidden" data-step="2">
+                        <div class="flex flex-col lg:flex-row gap-8 items-center">
+                            <div class="lg:w-1/3 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-aura-600 rounded-lg flex items-center justify-center text-sm font-bold">2</span>
+                                    <h3 class="text-2xl font-bold">One-Click Optimize</h3>
+                                </div>
+                                <p class="text-gray-400">Run intelligent system optimization with a single click. Our AI analyzes your system and applies the best tweaks for maximum gaming performance.</p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>AI-powered optimization</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Background process management</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Memory cleanup & defragment</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-2/3">
+                                <div class="screenshot-container">
+                                    <img src="/static/images/newoptimizer.png" alt="Aura Optimizer" onerror="this.src='https://via.placeholder.com/1200x700/0a0a0a/22c55e?text=Optimizer+Screenshot'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Network -->
+                    <div class="walkthrough-step hidden" data-step="3">
+                        <div class="flex flex-col lg:flex-row gap-8 items-center">
+                            <div class="lg:w-1/3 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-aura-600 rounded-lg flex items-center justify-center text-sm font-bold">3</span>
+                                    <h3 class="text-2xl font-bold">Network Optimization</h3>
+                                </div>
+                                <p class="text-gray-400">Reduce ping and stabilize your connection with advanced network tuning. Perfect for competitive online gaming where every millisecond counts.</p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>TCP/UDP optimization</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>DNS cache optimization</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-aura-500"></i>
+                                        <span>Latency reduction</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-2/3">
+                                <div class="screenshot-container">
+                                    <img src="/static/images/newnetwork.png" alt="Aura Network" onerror="this.src='https://via.placeholder.com/1200x700/0a0a0a/22c55e?text=Network+Screenshot'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center justify-between pt-8 border-t border-white/10">
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="step-indicator w-8 h-2 rounded-full bg-aura-600 active cursor-pointer" data-goto="1"></button>
+                        <button type="button" class="step-indicator w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 cursor-pointer" data-goto="2"></button>
+                        <button type="button" class="step-indicator w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 cursor-pointer" data-goto="3"></button>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">Step <span id="current-step">1</span> of 3</span>
+                        <div class="flex gap-2">
+                            <button type="button" id="prev-btn" class="nav-arrow p-3 rounded-lg opacity-30 cursor-not-allowed" style="pointer-events:auto;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <button type="button" id="next-btn" class="nav-arrow p-3 rounded-lg bg-aura-600 border-aura-500 hover:bg-aura-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    (function() {
+        var currentStep = 1;
+        var totalSteps = 3;
+        var steps = document.querySelectorAll('.walkthrough-step');
+        var dots = document.querySelectorAll('.step-indicator');
+        var prevBtn = document.getElementById('prev-btn');
+        var nextBtn = document.getElementById('next-btn');
+        var stepLabel = document.getElementById('current-step');
+
+        function show(step) {
+            for (var i = 0; i < steps.length; i++) {
+                steps[i].setAttribute('style', 'display:none');
+            }
+            for (var i = 0; i < steps.length; i++) {
+                if (steps[i].getAttribute('data-step') == step) {
+                    steps[i].setAttribute('style', 'display:block');
+                }
+            }
+            for (var j = 0; j < dots.length; j++) {
+                if (j + 1 == step) {
+                    dots[j].setAttribute('style', 'width:32px;height:8px;border-radius:9999px;background:#16a34a;cursor:pointer;border:none;');
+                } else {
+                    dots[j].setAttribute('style', 'width:8px;height:8px;border-radius:9999px;background:rgba(255,255,255,0.2);cursor:pointer;border:none;');
+                }
+            }
+            if (step == 1) {
+                prevBtn.setAttribute('style', 'opacity:0.3;cursor:not-allowed;pointer-events:auto;padding:12px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);');
+            } else {
+                prevBtn.setAttribute('style', 'opacity:1;cursor:pointer;pointer-events:auto;padding:12px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);');
+            }
+            if (step == totalSteps) {
+                nextBtn.textContent = 'Finish';
+            } else {
+                nextBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+            }
+            stepLabel.textContent = step;
+            currentStep = step;
+        }
+
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentStep < totalSteps) {
+                show(currentStep + 1);
+            } else {
+                var p = document.getElementById('pricing');
+                if (p) p.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentStep > 1) {
+                show(currentStep - 1);
+            }
+        });
+
+        for (var d = 0; d < dots.length; d++) {
+            (function(idx) {
+                dots[idx].addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    show(idx + 1);
+                });
+            })(d);
+        }
+
+        show(1);
+    })();
+    </script>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Choose the plan that fits your needs. All plans include our core optimization engine.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                {{range .Products}}
+                <div class="relative group">
+                    {{if .IsPopular}}
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                        <span class="bg-aura-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    {{end}}
+                    
+                    <div class="{{if .IsPopular}}pricing-popular{{else}}feature-card{{end}} rounded-2xl p-8 h-full flex flex-col card-hover">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2">{{.Name}}</h3>
+                            <p class="text-gray-400 text-sm">{{.Description}}</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            {{if not .Price}}
+                            <span class="text-5xl font-bold">Free</span>
+                            {{else}}
+                            <span class="text-5xl font-bold">${{.Price}}</span>
+                            {{if .ComparePrice}}
+                            <span class="text-gray-500 line-through ml-2">${{.ComparePrice}}</span>
+                            {{end}}
+                            {{end}}
+                        </div>
+                        
+                        <ul class="space-y-4 mb-8 flex-1">
+                            {{range .Features}}
+                            <li class="flex items-center gap-3 text-sm text-gray-300">
+                                <i data-lucide="check" class="w-5 h-5 text-aura-500 flex-shrink-0"></i>
+                                <span>{{.}}</span>
+                            </li>
+                            {{end}}
+                        </ul>
+                        
+                        {{if not .Price}}
+                        <a href="/download" class="block w-full btn-secondary py-3 rounded-xl font-semibold text-center">
+                            Download Free
+                        </a>
+                        {{else}}
+                        <a href="/checkout?product={{.ID}}" class="block w-full {{if .IsPopular}}btn-green{{else}}btn-secondary{{end}} py-3 rounded-xl font-semibold text-center">
+                            Get {{.Name}}
+                        </a>
+                        {{end}}
+                    </div>
+                </div>
+                {{end}}
+            </div>
+            
+            <div class="mt-12 text-center">
+                <p class="text-sm text-gray-500 flex items-center justify-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-aura-500"></i>
+                    30-day money-back guarantee • Instant delivery • Lifetime updates
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners -->
+    <section id="partners" class="py-24 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Our Partners</h2>
+                <p class="text-gray-400">Trusted by competitive players and content creators who demand peak performance.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">W</div>
+                    <p class="font-semibold">Wagers</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">K</div>
+                    <p class="font-semibold">Kise</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Token Pro</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">R</div>
+                    <p class="font-semibold">Rezy</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">A</div>
+                    <p class="font-semibold">Ajerss</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-2xl font-bold mb-4 ring-2 ring-white/10">S</div>
+                    <p class="font-semibold">Sjay</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Content Creator</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <img src="/static/images/perksfn.jpeg" alt="perksfn" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
+                    <p class="font-semibold">perksfn</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <img src="/static/images/narpzfn.jpeg" alt="NarpzFN" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
+                    <p class="font-semibold">NarpzFN</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+                <div class="feature-card rounded-2xl p-6 w-40 flex flex-col items-center text-center">
+                    <img src="/static/images/bokify.jpeg" alt="Bokify" class="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-white/10" />
+                    <p class="font-semibold">Bokify</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Pro Player</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-gray-400">Real reviews from real gamers who optimized their setup with Aura.</p>
+            </div>
+
+            <!-- Carousel Navigation -->
+            <div class="flex items-center gap-3 mb-8">
+                <button onclick="scrollTestimonials(-1)" class="nav-arrow p-3 rounded-lg">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <button onclick="scrollTestimonials(1)" class="nav-arrow p-3 rounded-lg">
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Review Cards -->
+            <div id="testimonials-track" class="flex gap-6 overflow-x-auto pb-4" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+                <style>#testimonials-track::-webkit-scrollbar { display: none; }</style>
+
+                <!-- Review 1 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold">T</div>
+                        <div>
+                            <p class="font-semibold text-sm">TurboFrag</p>
+                            <p class="text-xs text-gray-500">12.01.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">Was getting 120fps in Fortnite with constant stutters. Ran Aura one time and now I'm at a stable 240fps with zero frame drops. My friends thought I upgraded my GPU lol</p>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-sm font-bold">D</div>
+                        <div>
+                            <p class="font-semibold text-sm">DxRival</p>
+                            <p class="text-xs text-gray-500">28.02.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">My low end laptop was only able to push out 80 fps max with consistent 20-40 fps but after using Aura this thing started pumping out 120-300 fps. I love Aura so much!</p>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-sm font-bold">K</div>
+                        <div>
+                            <p class="font-semibold text-sm">KrypticAim</p>
+                            <p class="text-xs text-gray-500">15.03.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">10/10, before using Aura my GPU was struggling to run Valorant past 40-50fps even on low settings, now I can comfortably run it at 144fps and my ping improved by 20-30ms. Game changer.</p>
+                </div>
+
+                <!-- Review 4 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-sm font-bold">V</div>
+                        <div>
+                            <p class="font-semibold text-sm">VexSnipes</p>
+                            <p class="text-xs text-gray-500">02.05.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">I thought it was a scam at first ngl but decided to try the free version. Now I get 120+ on any Roblox game that used to lag. Bought Pro the same day, no regrets.</p>
+                </div>
+
+                <!-- Review 5 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-sm font-bold">N</div>
+                        <div>
+                            <p class="font-semibold text-sm">NightOps</p>
+                            <p class="text-xs text-gray-500">19.06.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">Network optimization alone was worth it. My ping in Warzone went from 60ms to 25ms consistently. Combined with the FPS boost I'm literally playing a different game now.</p>
+                </div>
+
+                <!-- Review 6 -->
+                <div class="flex-shrink-0 w-80 sm:w-96 feature-card rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">Z</div>
+                        <div>
+                            <p class="font-semibold text-sm">ZeroInput</p>
+                            <p class="text-xs text-gray-500">08.08.2025</p>
+                        </div>
+                        <div class="ml-auto flex gap-0.5">
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-aura-500 fill-aura-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">Been using Aura Pro for 3 months now. Every Windows update I just re-run the optimizer and I'm back to peak performance in seconds. Best $10 I ever spent on gaming.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    function scrollTestimonials(dir) {
+        var track = document.getElementById('testimonials-track');
+        var cardWidth = track.querySelector('div').offsetWidth + 24;
+        track.scrollLeft += dir * cardWidth;
+    }
+    </script>
+
+    <!-- CTA Section -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-aura-950/20 to-transparent"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-6">Ready to Boost Your FPS?</h2>
+            <p class="text-xl text-gray-400 mb-8">Join 50,000+ gamers who've already made the switch. Start free, upgrade anytime.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#pricing" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center gap-2">
+                    <span>Get Started Now</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
+                <a href="/download" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-lg">
+                    Try Free Version
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-sm">A</div>
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">© 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-black border-l border-white/10 transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button onclick="toggleCart()" class="p-2 hover:bg-white/5 rounded-lg transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                    <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-6 mt-6">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-gray-400">Total</span>
+                    <span id="cart-total" class="text-2xl font-bold text-gradient">$0.00</span>
+                </div>
+                <button onclick="checkout()" id="checkout-btn" disabled class="w-full btn-green py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleCart()"></div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-aura-900 border border-aura-700 px-6 py-4 rounded-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-aura-400"></i>
+        <span class="font-medium">Added to cart!</span>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let cart = [];
+
+        // Cart functionality
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+            
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+                loadCart();
+            }
+        }
+        
+        async function addToCart(productId) {
+            try {
+                const res = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId })
+                });
+
+                if (res.ok) {
+                    showToast();
+                    await loadCart();
+                    toggleCart();
+                } else if (res.status === 401) {
+                    window.location.href = '/login';
+                }
+            } catch (e) {
+                console.error('Failed to add to cart');
+            }
+        }
+
+        async function loadCart() {
+            try {
+                const res = await fetch('/api/cart');
+                if (!res.ok) return;
+                const data = await res.json();
+                const container = document.getElementById('cart-items');
+                const totalEl = document.getElementById('cart-total');
+                const checkoutBtn = document.getElementById('checkout-btn');
+                const badge = document.getElementById('cart-count');
+
+                if (!data.items || data.items.length === 0) {
+                    container.innerHTML = '<div class="text-center py-12 text-gray-500"><p>Your cart is empty</p></div>';
+                    totalEl.textContent = '$0.00';
+                    checkoutBtn.disabled = true;
+                    if (badge) { badge.classList.remove('scale-100'); badge.classList.add('scale-0'); }
+                    return;
+                }
+
+                container.innerHTML = data.items.map(function(item) {
+                    return '<div class="flex justify-between items-center p-4 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">' +
+                        '<div><p class="font-semibold">' + item.name + '</p>' +
+                        '<p class="text-sm text-gray-400">' + item.description + '</p></div>' +
+                        '<div class="flex items-center gap-3">' +
+                        '<span class="font-bold text-aura-400">' + (item.price === 0 ? 'Free' : '$' + item.price) + '</span>' +
+                        '<button onclick="removeFromCart(\'' + item.id + '\')" class="text-red-400 hover:text-red-300 transition" aria-label="Remove from cart">' +
+                        '<i data-lucide="trash-2" class="w-4 h-4"></i>' +
+                        '</button>' +
+                        '</div></div>';
+                }).join('');
+                lucide.createIcons();
+
+                totalEl.textContent = '$' + data.total.toFixed(2);
+                checkoutBtn.disabled = false;
+                if (badge) {
+                    badge.textContent = data.count;
+                    if (data.count > 0) {
+                        badge.classList.remove('scale-0');
+                        badge.classList.add('scale-100');
+                    } else {
+                        badge.classList.remove('scale-100');
+                        badge.classList.add('scale-0');
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load cart');
+            }
+        }
+
+        async function removeFromCart(productId) {
+            try {
+                const res = await fetch('/api/cart/remove?product_id=' + encodeURIComponent(productId), { method: 'DELETE' });
+                if (res.ok) {
+                    await loadCart();
+                } else if (res.status === 401) {
+                    window.location.href = '/login';
+                }
+            } catch (e) {
+                console.error('Failed to remove from cart');
+            }
+        }
+        
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        function checkout() {
+            window.location.href = '/pricing';
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>

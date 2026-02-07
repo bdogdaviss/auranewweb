@@ -1,0 +1,191 @@
+<!-- templates/features.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features - Aura Optimizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d', 950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: #15803d; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-blur { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-green { background: #15803d; color: #fff; transition: all 0.3s ease; }
+        .btn-green:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 10px 40px rgba(21, 128, 61, 0.4); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-xl text-white group-hover:bg-aura-700 transition-colors">A</div>
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
+                    <a href="/features" class="text-sm text-white transition font-semibold">Features</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">Get Started</a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Features Content -->
+    <div class="pt-32 pb-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-4">How Aura Works</h1>
+                <p class="text-gray-400">Simple 4-step optimization process</p>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <!-- Step 1 -->
+                <div class="flex gap-6 mb-8">
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center font-bold text-lg shadow-lg shadow-aura-500/30">1</div>
+                        <div class="absolute top-14 left-1/2 -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-aura-600 to-transparent"></div>
+                    </div>
+                    <div class="glass rounded-xl p-6 flex-1 border border-aura-500/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <h3 class="text-xl font-bold">System Scan</h3>
+                            <span class="px-2 py-1 bg-aura-900/50 text-aura-400 text-xs rounded-full flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-aura-400 rounded-full animate-pulse"></span>
+                                In Progress
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Deep analysis of your PC configuration, running processes, and system performance bottlenecks.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex gap-6 mb-8 opacity-50">
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+                        <div class="absolute top-14 left-1/2 -translate-x-1/2 w-1 h-16 bg-gray-800"></div>
+                    </div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <h3 class="text-xl font-bold mb-2">Optimization</h3>
+                        <p class="text-gray-400 text-sm">Apply targeted optimizations to gaming settings, background processes, and network configurations.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex gap-6 mb-8 opacity-50">
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+                        <div class="absolute top-14 left-1/2 -translate-x-1/2 w-1 h-16 bg-gray-800"></div>
+                    </div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <h3 class="text-xl font-bold mb-2">Performance Boost</h3>
+                        <p class="text-gray-400 text-sm">Disable unnecessary services, clean up cache, and optimize memory allocation for maximum FPS.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flex gap-6 opacity-50">
+                    <div class="w-12 h-12 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center font-bold text-lg">4</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <h3 class="text-xl font-bold mb-2">Results</h3>
+                        <p class="text-gray-400 text-sm">Get detailed performance metrics and recommendations for further improvements.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Grid -->
+            <div class="mt-24 grid md:grid-cols-3 gap-6">
+                <div class="glass rounded-xl p-6 text-center hover:border-aura-500/30 transition">
+                    <div class="w-14 h-14 bg-aura-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="scan" class="w-7 h-7 text-aura-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Smart Detection</h3>
+                    <p class="text-sm text-gray-400">Automatically detects your hardware and applies optimal settings.</p>
+                </div>
+                <div class="glass rounded-xl p-6 text-center hover:border-aura-500/30 transition">
+                    <div class="w-14 h-14 bg-aura-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="zap" class="w-7 h-7 text-aura-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">One-Click Boost</h3>
+                    <p class="text-sm text-gray-400">Instant performance boost with a single click. No technical knowledge needed.</p>
+                </div>
+                <div class="glass rounded-xl p-6 text-center hover:border-aura-500/30 transition">
+                    <div class="w-14 h-14 bg-aura-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-aura-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Safe & Reversible</h3>
+                    <p class="text-sm text-gray-400">All changes are reversible. Your system stays safe and stable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-aura-800 rounded-lg flex items-center justify-center font-bold text-sm">A</div>
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

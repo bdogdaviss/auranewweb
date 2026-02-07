@@ -1,0 +1,256 @@
+<!-- templates/checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        aura: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d', 950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: #15803d; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-blur { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #15803d; border-radius: 4px; }
+        #paypal-button-container { min-height: 150px; }
+        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #22c55e; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-sm text-gray-400 hover:text-white transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-white transition">Download</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    {{if .User}}
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-400 hover:text-white transition hidden sm:block">Sign in</a>
+                    <a href="/register" class="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-aura-500 hover:text-white transition">Get Started</a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Content -->
+    <div class="pt-32 pb-24">
+        <div class="max-w-3xl mx-auto px-6">
+            <a href="/pricing" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition mb-8">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Pricing
+            </a>
+
+            <div class="grid md:grid-cols-5 gap-8">
+                <!-- Order Summary -->
+                <div class="md:col-span-2">
+                    <div class="glass rounded-2xl p-6 sticky top-28">
+                        <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                        <div class="border-b border-white/10 pb-4 mb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-medium">{{.Product.Name}}</p>
+                                    <p class="text-sm text-gray-400">{{.Product.Description}}</p>
+                                </div>
+                            </div>
+                            <ul class="space-y-1.5 mt-3">
+                                {{range .Product.Features}}
+                                <li class="flex items-center gap-2 text-xs text-gray-400">
+                                    <i data-lucide="check" class="w-3 h-3 text-aura-500 flex-shrink-0"></i>
+                                    {{.}}
+                                </li>
+                                {{end}}
+                            </ul>
+                        </div>
+                        {{if .Product.ComparePrice}}
+                        <div class="flex justify-between text-sm text-gray-400 mb-1">
+                            <span>Original price</span>
+                            <span class="line-through">${{.Product.ComparePrice}}</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-aura-400 mb-3">
+                            <span>Discount</span>
+                            <span>-${{.Savings}}</span>
+                        </div>
+                        {{end}}
+                        <div class="flex justify-between text-lg font-bold pt-2 border-t border-white/10">
+                            <span>Total</span>
+                            <span class="text-gradient">${{.Product.Price}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="md:col-span-3">
+                    <h1 class="text-2xl font-bold mb-6">Complete your purchase</h1>
+
+                    <!-- Express Checkout (PayPal Buttons) -->
+                    <div class="glass rounded-2xl p-6 mb-6">
+                        <h3 class="text-sm font-medium text-gray-400 mb-4">Express Checkout</h3>
+                        <div id="paypal-button-container">
+                            <div class="flex items-center justify-center py-8">
+                                <div class="spinner"></div>
+                                <span class="ml-3 text-sm text-gray-400">Loading payment options...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div id="result-message" class="hidden rounded-xl p-4 mb-4 text-sm"></div>
+
+                    <!-- Security Notice -->
+                    <div class="flex items-center gap-3 text-xs text-gray-500 mt-4">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-aura-600"></i>
+                        <span>Payments are secured and processed by PayPal. Your financial information is never stored on our servers.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg">Aura Optimizer</span>
+                </div>
+                <div class="flex gap-8 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Discord</a>
+                </div>
+                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- PayPal JS SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id={{.PayPalClientID}}&currency=USD&intent=capture&components=buttons&enable-funding=venmo,paylater"></script>
+
+    <script>
+        const productID = "{{.Product.ID}}";
+        const resultMessage = document.getElementById("result-message");
+
+        function showMessage(message, isError) {
+            resultMessage.className = isError
+                ? "rounded-xl p-4 mb-4 text-sm bg-red-500/10 border border-red-500/20 text-red-400"
+                : "rounded-xl p-4 mb-4 text-sm bg-aura-500/10 border border-aura-500/20 text-aura-400";
+            resultMessage.textContent = message;
+            resultMessage.classList.remove("hidden");
+        }
+
+        paypal.Buttons({
+            style: {
+                layout: "vertical",
+                shape: "rect",
+                label: "paypal",
+                color: "gold",
+                tagline: false,
+            },
+
+            // Called when buyer clicks PayPal button
+            createOrder: async function() {
+                try {
+                    const response = await fetch("/api/paypal/create-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ product_id: productID }),
+                    });
+                    const data = await response.json();
+
+                    if (data.id) {
+                        return data.id;
+                    }
+                    throw new Error(data.error || "Could not create order.");
+                } catch (error) {
+                    showMessage("Failed to start checkout: " + error.message, true);
+                    throw error;
+                }
+            },
+
+            // Called when buyer approves the payment
+            onApprove: async function(data) {
+                try {
+                    const response = await fetch("/api/paypal/capture-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ order_id: data.orderID }),
+                    });
+                    const orderData = await response.json();
+
+                    if (orderData.success) {
+                        showMessage("Payment successful! Redirecting...", false);
+                        setTimeout(function() {
+                            window.location.href = "/download";
+                        }, 1500);
+                    } else {
+                        throw new Error(orderData.error || "Payment could not be captured.");
+                    }
+                } catch (error) {
+                    showMessage("Payment failed: " + error.message, true);
+                }
+            },
+
+            onCancel: function() {
+                showMessage("Payment was cancelled. You can try again anytime.", true);
+            },
+
+            onError: function(err) {
+                console.error("PayPal error:", err);
+                showMessage("Something went wrong with PayPal. Please try again.", true);
+            },
+        }).render("#paypal-button-container");
+    </script>
+</body>
+</html>

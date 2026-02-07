@@ -1,0 +1,279 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{template "title" .}} - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        aura: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #10b981, 0 0 10px #10b981' },
+                            '100%': { boxShadow: '0 0 20px #10b981, 0 0 30px #10b981' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .hero-glow { position: relative; }
+        .hero-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            animation: pulse-slow 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .step-line { position: relative; }
+        .step-line::after {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 48px;
+            width: 2px;
+            height: calc(100% - 48px);
+            background: linear-gradient(to bottom, #10b981, transparent);
+        }
+        .step-line:last-child::after { display: none; }
+    </style>
+    {{template "head" .}}
+</head>
+<body class="bg-gray-950 text-white antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-8">
+                    <a href="/" class="flex items-center gap-2">
+                        <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                        <span class="font-bold text-xl tracking-tight">Aura</span>
+                    </a>
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="/" class="text-sm text-gray-300 hover:text-white transition">Home</a>
+                        <a href="/features" class="text-sm text-gray-300 hover:text-white transition">Features</a>
+                        <a href="/pricing" class="text-sm text-gray-300 hover:text-white transition">Pricing</a>
+                        <a href="/download" class="text-sm text-gray-300 hover:text-white transition">Download</a>
+                        <a href="/about" class="text-sm text-gray-300 hover:text-white transition">About</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleCart()" class="relative p-2 text-gray-300 hover:text-white transition">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-aura-500 rounded-full text-xs flex items-center justify-center hidden">0</span>
+                    </button>
+                    
+                    {{if .User}}
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-300 hidden sm:block">{{.User.Name}}</span>
+                        <img src="{{.User.Avatar}}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700">
+                        <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                    </div>
+                    {{else}}
+                    <a href="/login" class="text-sm text-gray-300 hover:text-white transition">Log in</a>
+                    <a href="/register" class="bg-aura-600 hover:bg-aura-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Sign up</a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-900 border-l border-gray-800 transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-4">
+                <!-- Cart items injected here -->
+            </div>
+            <div class="border-t border-gray-800 pt-4 mt-4">
+                <div class="flex justify-between mb-4">
+                    <span class="text-gray-400">Total</span>
+                    <span id="cart-total" class="text-xl font-bold">$0.00</span>
+                </div>
+                <button onclick="checkout()" id="checkout-btn" class="w-full bg-aura-600 hover:bg-aura-700 text-white py-3 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="toggleCart()"></div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        {{template "content" .}}
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        lucide.createIcons();
+        
+        // Cart functionality
+        let cart = { items: [], total: 0 };
+        
+        async function loadCart() {
+            try {
+                const res = await fetch('/api/cart');
+                if (res.ok) {
+                    cart = await res.json();
+                    updateCartUI();
+                }
+            } catch (e) { console.error('Failed to load cart'); }
+        }
+        
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const itemsContainer = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+            
+            if (cart.items.length === 0) {
+                itemsContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+                checkoutBtn.disabled = true;
+            } else {
+                itemsContainer.innerHTML = cart.items.map(item => `
+                    <div class="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
+                        <div>
+                            <h3 class="font-medium">${item.product.name}</h3>
+                            <p class="text-sm text-gray-400">Qty: ${item.quantity}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold">$${(item.product.price * item.quantity).toFixed(2)}</span>
+                            <button onclick="removeFromCart('${item.product_id}')" class="text-red-400 hover:text-red-300">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+                checkoutBtn.disabled = false;
+            }
+            
+            totalEl.textContent = '$' + cart.total.toFixed(2);
+        }
+        
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+            
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                loadCart();
+            }
+        }
+        
+        async function addToCart(productId) {
+            try {
+                const res = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+                
+                if (res.ok) {
+                    cart = await res.json();
+                    updateCartUI();
+                    showToast('Added to cart!', 'success');
+                    toggleCart();
+                } else if (res.status === 401) {
+                    window.location.href = '/login';
+                }
+            } catch (e) { showToast('Failed to add to cart', 'error'); }
+        }
+        
+        async function removeFromCart(productId) {
+            try {
+                const res = await fetch(`/api/cart/remove?product_id=${productId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    cart = await res.json();
+                    updateCartUI();
+                }
+            } catch (e) { console.error('Failed to remove item'); }
+        }
+        
+        function checkout() {
+            window.open('https://www.paypal.com/ncp/payment/79PXBKPV3Z27C', '_blank');
+        }
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-10 opacity-0 ${
+                type === 'success' ? 'bg-aura-600' : 'bg-red-600'
+            } text-white flex items-center gap-2`;
+            toast.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check' : 'alert-circle'}" class="w-5 h-5"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Initial load
+        loadCart();
+    </script>
+    {{template "scripts" .}}
+</body>
+</html>
