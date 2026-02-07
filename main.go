@@ -20,9 +20,9 @@ import (
 
 // PayPal configuration - set these as environment variables
 var (
-	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "AQ-glYA5T5b08JoMfxS4352CHu-IPmF-z1Kmgi8PZ3J-o1Zc15YNz6HRo9ohFTxKQaCMLFKcHfwhieCD")
-	paypalSecret   = getEnv("PAYPAL_SECRET", "ECNrwvinmRldNKUDT8lmQMzFk2y78AIOjCfUBEIPkE_bPIDzRMb3lJxou9q846BP0v_p7URBbE-_YZyX")
-	paypalBaseURL  = getEnv("PAYPAL_BASE_URL", "https://api-m.sandbox.paypal.com") // Use https://api-m.paypal.com for live
+	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "AUF161yb2pAbNkVt-Hnaka0T2aCdPjC8Peaz5P8LHaeEzFdxANQ4Nq3bHSZwO_nLmXkGqK93CnkrVLzE")
+	paypalSecret   = getEnv("PAYPAL_SECRET", "EBCPsXsAV5sNAu-QwCT4H5u8jjyawKS6vZ_LxnDxoZ0VZ0kmZlmVLhV_wKgRUnyEOnOsTQkGlWui1fg6")
+	paypalBaseURL  = getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com") // Use https://api-m.paypal.com for live
 )
 
 func getEnv(key, fallback string) string {
