@@ -131,7 +131,7 @@
                             Download Free
                         </a>
                         {{else}}
-                        <a href="/checkout?product={{.ID}}" hx-boost="false" class="block w-full {{if .IsPopular}}btn-green{{else}}border border-white/20 hover:border-aura-500 text-white{{end}} py-3 rounded-xl font-semibold text-center transition cursor-pointer">
+                        <a href="/checkout?product={{.ID}}" class="block w-full {{if .IsPopular}}btn-green{{else}}border border-white/20 hover:border-aura-500 text-white{{end}} py-3 rounded-xl font-semibold text-center transition cursor-pointer">
                             Get {{.Name}}
                         </a>
                         <div class="flex items-center justify-center gap-2 mt-3">

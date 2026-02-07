@@ -8,7 +8,6 @@
     <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -233,7 +232,7 @@
         }
     </style>
 </head>
-<body class="antialiased" hx-boost="true">
+<body class="antialiased">
 
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 nav-blur">
@@ -597,7 +596,7 @@
                             Download Free
                         </a>
                         {{else}}
-                        <a href="/checkout?product={{.ID}}" hx-boost="false" class="block w-full {{if .IsPopular}}btn-green{{else}}btn-secondary{{end}} py-3 rounded-xl font-semibold text-center">
+                        <a href="/checkout?product={{.ID}}" class="block w-full {{if .IsPopular}}btn-green{{else}}btn-secondary{{end}} py-3 rounded-xl font-semibold text-center">
                             Get {{.Name}}
                         </a>
                         {{end}}

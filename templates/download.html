@@ -8,6 +8,7 @@
     <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -25,13 +26,13 @@
                             100: '#dcfce7',
                             200: '#bbf7d0',
                             300: '#86efac',
-                            400: '#4ade80',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            900: '#14532d',
-                            950: '#052e16',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
                         }
                     }
                 }
@@ -41,82 +42,152 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #ffffff; line-height: 1.6; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #0a0a0f; 
+            color: #ffffff; 
+            line-height: 1.5;
+        }
         html { scroll-behavior: smooth; }
         ::selection { background: #059669; color: white; }
+        
         .text-gradient {
             background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        
         .nav-blur {
-            background: rgba(10, 10, 15, 0.85);
+            background: rgba(10, 10, 15, 0.9);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .btn-green {
-            background: #059669;
+        
+        /* Exact button styles from reference */
+        .btn-download {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #ffffff;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
         }
-        .btn-green:hover {
-            background: #10b981;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.35);
+        
+        .btn-download:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.35);
         }
-        .step-line { position: relative; }
-        .step-line::after {
-            content: '';
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Feature cards - exact dimensions */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 24px;
+            height: 100%;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: #10b981;
+        }
+        
+        /* Video container - exact glow effect */
+        .video-wrapper {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .video-glow {
             position: absolute;
-            left: 24px;
-            top: 48px;
-            width: 2px;
-            height: calc(100% - 48px);
-            background: linear-gradient(to bottom, #22c55e, transparent);
+            inset: -2px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            border-radius: 16px;
+            opacity: 0.4;
+            filter: blur(20px);
+            z-index: 0;
         }
-        .step-line:last-child::after { display: none; }
-        .grid-bg {
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
+        
+        .video-container {
+            position: relative;
+            background: #0f0f14;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            z-index: 1;
         }
+        
+        .footer-link {
+            color: #6b7280;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .footer-link:hover {
+            color: #10b981;
+        }
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0f; }
         ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased" hx-boost="true">
 
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 nav-blur">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <a href="/" class="flex items-center gap-3 group">
-                    <img src="/static/images/icon.ico" alt="Aura" class="w-10 h-10 rounded-lg object-cover" />
-                    <span class="font-bold text-xl tracking-tight">Aura</span>
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2 group">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg tracking-tight">Aura</span>
                 </a>
 
-                <div class="hidden md:flex items-center gap-8">
+                <div class="hidden md:flex items-center gap-6">
                     <a href="/" class="text-sm text-gray-400 hover:text-emerald-400 transition">Home</a>
                     <a href="/pricing" class="text-sm text-gray-400 hover:text-emerald-400 transition">Pricing</a>
-                    <a href="/download" class="text-sm text-white transition font-semibold">Download</a>
+                    <a href="/download" class="text-sm text-emerald-400 transition font-medium">Download</a>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     {{if .User}}
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <span class="text-sm text-gray-400 hidden sm:block">{{.User.Name}}</span>
                         <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
                     </div>
                     {{else}}
-                    <a href="https://discord.com/invite/4TBUw4nBFd" class="flex items-center gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+                    <a href="https://discord.com/invite/4TBUw4nBFd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
                         <img src="/static/images/discord.ico" alt="Discord" class="w-4 h-4" />
                         Discord
                     </a>
@@ -126,149 +197,179 @@
         </div>
     </nav>
 
-    <!-- Download Content -->
-    <div class="pt-32 pb-24">
-        <div class="max-w-3xl mx-auto px-6 text-center">
-            <h1 class="text-4xl sm:text-5xl font-bold mb-4">Download <span class="text-gradient">Aura</span></h1>
-            <p class="text-gray-400 mb-12">Free to download. Pro features available.</p>
+    <!-- Hero Section - Exact spacing -->
+    <section class="pt-28 pb-8 px-6">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4 tracking-tight">
+                Aura <span class="text-gradient">Free</span> Optimizer
+            </h1>
+            <p class="text-base text-gray-400 mb-6 max-w-xl mx-auto leading-relaxed">
+                Designed for casual players and enthusiasts, great free alternative of our 
+                <a href="/pricing" class="text-emerald-400 hover:text-emerald-300 transition">premium</a> 
+                version, with limited features and optimizations.
+            </p>
 
-            <div class="glass rounded-2xl p-8 mb-12">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aura-950 border border-aura-800 text-aura-400 text-sm mb-6">
-                    <span class="w-2 h-2 bg-aura-500 rounded-full animate-pulse"></span>
-                    Windows detected
+            <!-- Buttons - Exact gap and sizing -->
+            <div class="flex items-center justify-center gap-3 mb-5">
+                <a href="{{.DownloadURL}}" target="_blank" rel="noopener noreferrer" class="btn-download">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Download Now
+                </a>
+                <a href="/pricing" class="btn-secondary">
+                    Check Premium
+                </a>
+            </div>
+
+            <!-- Windows badge - Exact styling -->
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+                </svg>
+                <span class="text-sm">Works on Any PC Running Windows 10/11.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Cards - Exact dimensions -->
+    <section class="py-8 px-6">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-4">
+            <!-- Safe & Secure -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
                 </div>
-
-                <div>
-                    <a href="{{.DownloadURL}}"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="inline-flex items-center justify-center gap-3 w-full sm:w-auto btn-green px-8 py-4 rounded-xl font-semibold text-lg mb-6">
-
-                        Download for Windows
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4 text-sm text-gray-400 mt-6 pt-6 border-t border-white/10">
-                    <div>
-                        <p class="text-gray-500 mb-1">Version</p>
-                        <p class="text-white font-medium">2.1.0</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 mb-1">Size</p>
-                        <p class="text-white font-medium">45 MB</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 mb-1">OS</p>
-                        <p class="text-white font-medium">Windows 10/11</p>
-                    </div>
-                </div>
-
-                <div class="mt-6 pt-6 border-t border-white/10">
-                    <button class="text-aura-400 hover:text-aura-300 text-sm flex items-center justify-center gap-2 mx-auto">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        Verify download integrity
-                    </button>
-                </div>
+                <h3 class="text-base font-semibold mb-1.5 text-white">Safe & Secure</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Creates automatic restore points before making any system changes
+                </p>
             </div>
 
             <!-- Quick Setup -->
-            <h2 class="text-2xl font-bold mb-8">Quick Setup</h2>
-            <div class="space-y-6 max-w-md mx-auto">
-                <div class="step-line flex gap-4 text-left">
-                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
-                    <div>
-                        <h3 class="font-semibold mb-1">Download & Run</h3>
-                        <p class="text-sm text-gray-400">Run the installer as Administrator</p>
-                    </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
                 </div>
-                <div class="step-line flex gap-4 text-left">
-                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
-                    <div>
-                        <h3 class="font-semibold mb-1">Create Account</h3>
-                        <p class="text-sm text-gray-400">Sign up to sync your settings</p>
-                    </div>
-                </div>
-                <div class="step-line flex gap-4 text-left">
-                    <div class="w-12 h-12 bg-aura-700 rounded-full flex items-center justify-center flex-shrink-0">
-                        <i data-lucide="check" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold mb-1">Start Optimizing</h3>
-                        <p class="text-sm text-gray-400">Run your first scan</p>
-                    </div>
-                </div>
+                <h3 class="text-base font-semibold mb-1.5 text-white">Quick Setup</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Get up and running with optimized settings in under 5 minutes
+                </p>
             </div>
 
-            <!-- System Requirements -->
-            <h2 class="text-2xl font-bold mb-8 mt-16">System Requirements</h2>
-            <div class="grid sm:grid-cols-2 gap-6">
-                <div class="glass rounded-xl p-6 text-left">
-                    <h3 class="text-sm font-semibold text-gray-500 mb-4 uppercase tracking-wider">Minimum</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">OS</span>
-                            <span>Windows 10</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">CPU</span>
-                            <span>Dual-core 2 GHz</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">RAM</span>
-                            <span>4 GB</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Storage</span>
-                            <span>100 MB</span>
-                        </div>
-                    </div>
+            <!-- Software Statistics -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="file-bar-chart" class="w-5 h-5"></i>
                 </div>
-                <div class="glass rounded-xl p-6 text-left border border-aura-500/30">
-                    <h3 class="text-sm font-semibold text-aura-400 mb-4 uppercase tracking-wider">Recommended</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">OS</span>
-                            <span>Windows 11</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">CPU</span>
-                            <span>Quad-core 3 GHz+</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">RAM</span>
-                            <span>8 GB+</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Storage</span>
-                            <span>500 MB</span>
-                        </div>
-                    </div>
+                <h3 class="text-base font-semibold mb-1.5 text-white">Software Statistics</h3>
+                <div class="text-sm text-gray-500 space-y-0.5">
+                    <p>Current Version: <span class="text-emerald-400 font-medium">v2.1.0</span></p>
+                    <p>Total Downloads: <span class="text-emerald-400 font-medium">50,000+</span></p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="py-12 border-t border-white/10" style="background: #07070b;">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-3">
-                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
-                    <span class="font-bold text-lg">Aura Optimizer</span>
+    <!-- Video Section - Exact spacing and glow -->
+    <section class="py-12 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-xl font-semibold text-center mb-8 text-white">Showcase & Tutorial Video</h2>
+            
+            <div class="video-wrapper">
+                <div class="video-glow"></div>
+                <div class="video-container bg-black flex items-center justify-center">
+                    <!-- Replace with your YouTube embed -->
+                    <div class="text-center p-8">
+                        <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-emerald-500/30 transition group">
+                            <i data-lucide="play" class="w-6 h-6 text-emerald-400 ml-0.5 group-hover:scale-110 transition"></i>
+                        </div>
+                        <p class="text-gray-400 text-sm">Add your video embed here</p>
+                    </div>
+                    
+                    <!-- YouTube Embed (replace VIDEO_ID): -->
+                    <!-- <iframe 
+                        class="absolute inset-0 w-full h-full"
+                        src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1&controls=1" 
+                        title="Aura Optimizer Tutorial"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe> -->
                 </div>
-                <div class="flex gap-8 text-sm text-gray-400">
-                    <a href="#" class="hover:text-emerald-400 transition">Privacy</a>
-                    <a href="#" class="hover:text-emerald-400 transition">Terms</a>
-                    <a href="#" class="hover:text-emerald-400 transition">Support</a>
-                    <a href="#" class="hover:text-emerald-400 transition">Discord</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - Compact -->
+    <footer class="border-t border-white/5 bg-[#07070b] mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-3">
+                        <img src="/static/images/icon.ico" alt="Aura" class="w-6 h-6 rounded object-cover" />
+                        <span class="font-bold text-sm">Aura Optimizer</span>
+                    </div>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Advanced system optimization tools for gamers and power users.
+                    </p>
                 </div>
-                <p class="text-sm text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+
+                <!-- Products -->
+                <div>
+                    <h4 class="font-semibold text-emerald-500 text-xs mb-3 uppercase tracking-wider">Products</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/download" class="footer-link">Free Optimizer</a></li>
+                        <li><a href="/pricing" class="footer-link">Premium License</a></li>
+                        <li><a href="/pricing" class="footer-link">Team License</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold text-emerald-500 text-xs mb-3 uppercase tracking-wider">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">Discord Server</a></li>
+                        <li><a href="#" class="footer-link">Documentation</a></li>
+                        <li><a href="#" class="footer-link">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="font-semibold text-emerald-500 text-xs mb-3 uppercase tracking-wider">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="#" class="footer-link">Terms of Service</a></li>
+                        <li><a href="#" class="footer-link">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-white/5 gap-4">
+                <p class="text-xs text-gray-600">&copy; 2024 Aura Optimizer. All rights reserved.</p>
+                
+                <div class="flex items-center gap-4">
+                    <a href="https://discord.com/invite/4TBUw4nBFd" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-emerald-400 transition">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-emerald-400 transition">
+                        <i data-lucide="youtube" class="w-4 h-4"></i>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-emerald-400 transition">
+                        <i data-lucide="github" class="w-4 h-4"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
 
     <script>
         lucide.createIcons();
+        
+        document.body.addEventListener('htmx:afterSwap', () => {
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>
