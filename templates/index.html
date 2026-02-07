@@ -597,7 +597,7 @@
                             Download Free
                         </a>
                         {{else}}
-                        <a href="/checkout?product={{.ID}}" class="block w-full {{if .IsPopular}}btn-green{{else}}btn-secondary{{end}} py-3 rounded-xl font-semibold text-center">
+                        <a href="/checkout?product={{.ID}}" hx-boost="false" class="block w-full {{if .IsPopular}}btn-green{{else}}btn-secondary{{end}} py-3 rounded-xl font-semibold text-center">
                             Get {{.Name}}
                         </a>
                         {{end}}
