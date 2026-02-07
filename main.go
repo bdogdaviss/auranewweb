@@ -315,8 +315,10 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		users[user.ID].LastActive = time.Now()
 		mu.Unlock()
 	}
+
 	templates.ExecuteTemplate(w, "download.html", map[string]interface{}{
-		"User": user,
+		"User":        user,
+		"DownloadURL": os.Getenv("AURA_DOWNLOAD_URL"),
 	})
 }
 
