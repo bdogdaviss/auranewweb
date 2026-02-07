@@ -131,12 +131,11 @@
                     <!-- Express Checkout (PayPal Buttons) -->
                     <div class="glass rounded-2xl p-6 mb-6">
                         <h3 class="text-sm font-medium text-gray-400 mb-4">Express Checkout</h3>
-                        <div id="paypal-button-container">
-                            <div class="flex items-center justify-center py-8">
-                                <div class="spinner"></div>
-                                <span class="ml-3 text-sm text-gray-400">Loading payment options...</span>
-                            </div>
+                        <div id="paypal-loading" class="flex items-center justify-center py-8">
+                            <div class="spinner"></div>
+                            <span class="ml-3 text-sm text-gray-400">Loading payment options...</span>
                         </div>
+                        <div id="paypal-button-container"></div>
                     </div>
 
                     <!-- Status Messages -->
@@ -176,11 +175,15 @@
     </script>
 
     <!-- PayPal JS SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id={{.PayPalClientID}}&currency=USD&intent=capture&components=buttons&enable-funding=venmo,paylater"></script>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id={{.PayPalClientID}}&currency=USD&intent=capture&components=buttons&enable-funding=venmo,paylater"
+        onerror="document.getElementById('paypal-loading').style.display='none'; document.getElementById('paypal-button-container').innerHTML='<p class=\'text-center text-sm text-red-400 py-8\'>Failed to load payment provider. Please refresh the page or try again later.</p>';"
+    ></script>
 
     <script>
         const productID = "{{.Product.ID}}";
         const resultMessage = document.getElementById("result-message");
+        const paypalLoading = document.getElementById("paypal-loading");
 
         function showMessage(message, isError) {
             resultMessage.className = isError
@@ -190,67 +193,78 @@
             resultMessage.classList.remove("hidden");
         }
 
-        paypal.Buttons({
-            style: {
-                layout: "vertical",
-                shape: "rect",
-                label: "paypal",
-                color: "gold",
-                tagline: false,
-            },
+        if (typeof paypal === "undefined") {
+            paypalLoading.style.display = "none";
+            document.getElementById("paypal-button-container").innerHTML =
+                '<p class="text-center text-sm text-red-400 py-8">Payment provider unavailable. Please refresh the page or try again later.</p>';
+        } else {
+            paypal.Buttons({
+                style: {
+                    layout: "vertical",
+                    shape: "rect",
+                    label: "paypal",
+                    color: "gold",
+                    tagline: false,
+                },
 
-            // Called when buyer clicks PayPal button
-            createOrder: async function() {
-                try {
-                    const response = await fetch("/api/paypal/create-order", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ product_id: productID }),
-                    });
-                    const data = await response.json();
+                createOrder: async function() {
+                    try {
+                        const response = await fetch("/api/paypal/create-order", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ product_id: productID }),
+                        });
+                        const data = await response.json();
 
-                    if (data.id) {
-                        return data.id;
+                        if (data.id) {
+                            return data.id;
+                        }
+                        throw new Error(data.error || "Could not create order.");
+                    } catch (error) {
+                        showMessage("Failed to start checkout: " + error.message, true);
+                        throw error;
                     }
-                    throw new Error(data.error || "Could not create order.");
-                } catch (error) {
-                    showMessage("Failed to start checkout: " + error.message, true);
-                    throw error;
-                }
-            },
+                },
 
-            // Called when buyer approves the payment
-            onApprove: async function(data) {
-                try {
-                    const response = await fetch("/api/paypal/capture-order", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ order_id: data.orderID }),
-                    });
-                    const orderData = await response.json();
+                onApprove: async function(data) {
+                    try {
+                        const response = await fetch("/api/paypal/capture-order", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ order_id: data.orderID }),
+                        });
+                        const orderData = await response.json();
 
-                    if (orderData.success) {
-                        showMessage("Payment successful! Redirecting...", false);
-                        setTimeout(function() {
-                            window.location.href = "/download";
-                        }, 1500);
-                    } else {
-                        throw new Error(orderData.error || "Payment could not be captured.");
+                        if (orderData.success) {
+                            showMessage("Payment successful! Redirecting...", false);
+                            setTimeout(function() {
+                                window.location.href = "/download";
+                            }, 1500);
+                        } else {
+                            throw new Error(orderData.error || "Payment could not be captured.");
+                        }
+                    } catch (error) {
+                        showMessage("Payment failed: " + error.message, true);
                     }
-                } catch (error) {
-                    showMessage("Payment failed: " + error.message, true);
-                }
-            },
+                },
 
-            onCancel: function() {
-                showMessage("Payment was cancelled. You can try again anytime.", true);
-            },
+                onCancel: function() {
+                    showMessage("Payment was cancelled. You can try again anytime.", true);
+                },
 
-            onError: function(err) {
-                console.error("PayPal error:", err);
-                showMessage("Something went wrong with PayPal. Please try again.", true);
-            },
-        }).render("#paypal-button-container");
+                onError: function(err) {
+                    console.error("PayPal error:", err);
+                    showMessage("Something went wrong with PayPal. Please try again.", true);
+                },
+            }).render("#paypal-button-container").then(function() {
+                paypalLoading.style.display = "none";
+            }).catch(function(err) {
+                console.error("PayPal render error:", err);
+                paypalLoading.style.display = "none";
+                document.getElementById("paypal-button-container").innerHTML =
+                    '<p class="text-center text-sm text-red-400 py-8">Could not load payment buttons. Please refresh the page or try again later.</p>';
+            });
+        }
     </script>
 </body>
 </html>
