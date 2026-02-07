@@ -880,6 +880,341 @@
         <span class="font-medium">Added to cart!</span>
     </div>
 
+    <!-- Aura Chat Bot -->
+    <div id="aura-chat-bubble" onclick="auraChat.toggle()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-aura-600 hover:bg-aura-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-300 hover:scale-110" style="box-shadow: 0 0 20px rgba(16,185,129,0.3);">
+        <svg id="chat-icon-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg id="chat-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+
+    <div id="aura-chat-window" class="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden transform scale-0 origin-bottom-right transition-transform duration-300" style="background:#0d0d14; border:1px solid rgba(16,185,129,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 40px rgba(16,185,129,0.1);">
+        <!-- Header -->
+        <div class="px-5 py-4 flex items-center gap-3" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(10,10,15,0.9)); border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <img src="/static/images/icon.ico" alt="Aura" class="w-9 h-9 rounded-full ring-2 ring-aura-500/30" />
+            <div class="flex-1">
+                <p class="font-semibold text-sm">Aura Support</p>
+                <p class="text-xs text-aura-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-aura-500 rounded-full inline-block"></span> Online</p>
+            </div>
+            <button onclick="auraChat.toggle()" class="text-gray-400 hover:text-white transition p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        <!-- Messages -->
+        <div id="aura-chat-messages" class="px-4 py-4 space-y-3 overflow-y-auto" style="height: 340px; scrollbar-width: thin; scrollbar-color: #15803d transparent;">
+        </div>
+
+        <!-- Input -->
+        <div class="px-4 py-3" style="border-top: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.3);">
+            <div class="flex items-center gap-2">
+                <input id="aura-chat-input" type="text" placeholder="Type a question..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500 transition" onkeydown="if(event.key==='Enter')auraChat.sendUserMessage()" />
+                <button onclick="auraChat.sendUserMessage()" class="bg-aura-600 hover:bg-aura-500 p-2.5 rounded-xl transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    var auraChat = (function() {
+        var isOpen = false;
+        var hasGreeted = false;
+
+        var quickReplies = [
+            { label: 'How does Aura work?', key: 'how_works' },
+            { label: 'Which plan is right for me?', key: 'which_plan' },
+            { label: 'Is Aura safe to use?', key: 'safe' },
+            { label: 'System requirements?', key: 'requirements' },
+            { label: 'Do you offer refunds?', key: 'refund' },
+            { label: 'I need help with setup', key: 'setup' }
+        ];
+
+        var responses = {
+            how_works: {
+                text: "Aura scans your system and applies optimizations tailored to your hardware. It cleans background processes, tunes network settings, and adjusts Windows configs to prioritize gaming performance. One click and you're done!",
+                followUp: [
+                    { label: 'What kind of FPS boost?', key: 'fps_boost' },
+                    { label: 'Does it change game files?', key: 'game_files' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            which_plan: {
+                text: "We have 3 plans:\n\n<b>Free</b> - Basic optimization, great for trying it out.\n\n<b>Lifetime Pro ($15)</b> - Full AI optimization, network tuning, priority support, and lifetime updates. Most popular!\n\n<b>Team License ($149.99)</b> - Pro features for up to 10 PCs. Perfect for teams and gaming houses.",
+                followUp: [
+                    { label: 'What does Pro include?', key: 'pro_features' },
+                    { label: 'Take me to pricing', key: 'go_pricing' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            safe: {
+                text: "100% safe. Aura only adjusts Windows settings and network configs — it never touches your game files or installs anything suspicious. All changes can be reversed. We're trusted by 50,000+ gamers and partnered with competitive Fortnite players.",
+                followUp: [
+                    { label: 'Will I get banned?', key: 'banned' },
+                    { label: 'Is it a virus?', key: 'virus' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            requirements: {
+                text: "Aura works on:\n\n• <b>Windows 10</b> or <b>Windows 11</b>\n• 4GB RAM minimum\n• 100MB free disk space\n• Internet connection for activation\n\nNo special hardware required — it works on laptops and desktops alike!",
+                followUp: [
+                    { label: 'Does it work on Mac?', key: 'mac' },
+                    { label: 'Download now', key: 'go_download' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            refund: {
+                text: "Yes! We offer a <b>30-day money-back guarantee</b>. If you're not satisfied with Aura Pro, reach out on our Discord and we'll process your refund — no questions asked.",
+                followUp: [
+                    { label: 'Join Discord', key: 'go_discord' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            setup: {
+                text: "Getting started is easy:\n\n<b>1.</b> Download Aura from our download page\n<b>2.</b> Run the installer (aura-setup.exe)\n<b>3.</b> Open Aura and click \"Optimize\"\n<b>4.</b> That's it! Your PC is now optimized\n\nIf you run into issues, our Discord community can help.",
+                followUp: [
+                    { label: 'Download now', key: 'go_download' },
+                    { label: 'Join Discord', key: 'go_discord' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            fps_boost: {
+                text: "Results vary by system, but our users report an <b>average +47% FPS increase</b>. Some users on lower-end systems have seen even bigger gains — going from 80fps to 200+ fps after optimization.",
+                followUp: [
+                    { label: 'Try it free', key: 'go_download' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            game_files: {
+                text: "No, never. Aura only optimizes <b>Windows system settings</b>, background processes, and network configurations. It does not modify, inject into, or interact with any game files whatsoever.",
+                followUp: [
+                    { label: 'Is it safe?', key: 'safe' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            pro_features: {
+                text: "Aura Pro includes everything in Free, plus:\n\n• <b>AI-powered optimization</b> tailored to your hardware\n• <b>Network optimization</b> (reduce ping)\n• <b>Advanced memory management</b>\n• <b>Priority support</b> on Discord\n• <b>Lifetime updates</b> — pay once, use forever",
+                followUp: [
+                    { label: 'Get Pro now', key: 'go_pricing' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            banned: {
+                text: "No. Aura does <b>not</b> interact with any game process or files. It only adjusts Windows-level settings. It's no different from manually tweaking your PC settings — game anti-cheats have zero reason to flag it.",
+                followUp: [
+                    { label: 'How does it work?', key: 'how_works' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            virus: {
+                text: "Aura is <b>not a virus</b>. Some antivirus programs flag optimization tools because they modify system settings — this is a false positive. You can verify our safety through our 50,000+ user community and partnered pro players.",
+                followUp: [
+                    { label: 'Join Discord', key: 'go_discord' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            mac: {
+                text: "Currently Aura is <b>Windows only</b> (Windows 10 & 11). We don't have plans for Mac at this time since our core audience is PC gamers.",
+                followUp: [
+                    { label: 'System requirements', key: 'requirements' },
+                    { label: 'Back to menu', key: 'menu' }
+                ]
+            },
+            go_pricing: { text: "Taking you to our pricing page!", action: function() { window.location.href = '/pricing'; } },
+            go_download: { text: "Taking you to the download page!", action: function() { window.location.href = '/download'; } },
+            go_discord: { text: "Opening our Discord server!", action: function() { window.open('https://discord.com/invite/4TBUw4nBFd', '_blank'); } },
+            menu: { text: null }
+        };
+
+        var keywords = [
+            { patterns: ['price', 'cost', 'how much', 'pay', 'pricing', 'plan'], key: 'which_plan' },
+            { patterns: ['how', 'work', 'what does', 'explain'], key: 'how_works' },
+            { patterns: ['safe', 'virus', 'malware', 'trust', 'legit', 'scam'], key: 'safe' },
+            { patterns: ['ban', 'banned', 'anti-cheat', 'anticheat', 'flagged'], key: 'banned' },
+            { patterns: ['fps', 'boost', 'performance', 'improve', 'increase', 'speed'], key: 'fps_boost' },
+            { patterns: ['download', 'install', 'get it', 'where'], key: 'setup' },
+            { patterns: ['refund', 'money back', 'return', 'cancel'], key: 'refund' },
+            { patterns: ['require', 'specs', 'windows', 'system', 'laptop', 'pc'], key: 'requirements' },
+            { patterns: ['pro', 'premium', 'upgrade', 'lifetime', 'features'], key: 'pro_features' },
+            { patterns: ['mac', 'linux', 'apple', 'macbook'], key: 'mac' },
+            { patterns: ['discord', 'support', 'help', 'contact', 'talk'], key: 'go_discord' },
+            { patterns: ['setup', 'install', 'start', 'begin', 'guide'], key: 'setup' },
+            { patterns: ['game files', 'modify', 'inject', 'touch'], key: 'game_files' },
+            { patterns: ['hi', 'hello', 'hey', 'sup', 'yo', 'whats up'], key: '_greeting' }
+        ];
+
+        function toggle() {
+            isOpen = !isOpen;
+            var win = document.getElementById('aura-chat-window');
+            var iconOpen = document.getElementById('chat-icon-open');
+            var iconClose = document.getElementById('chat-icon-close');
+
+            if (isOpen) {
+                win.style.transform = 'scale(1)';
+                iconOpen.classList.add('hidden');
+                iconClose.classList.remove('hidden');
+                if (!hasGreeted) { greet(); hasGreeted = true; }
+                document.getElementById('aura-chat-input').focus();
+            } else {
+                win.style.transform = 'scale(0)';
+                iconOpen.classList.remove('hidden');
+                iconClose.classList.add('hidden');
+            }
+        }
+
+        function greet() {
+            addBotMessage("Hey! I'm Aura's assistant. How can I help you today?");
+            setTimeout(function() { showQuickReplies(quickReplies); }, 400);
+        }
+
+        function addBotMessage(html) {
+            var container = document.getElementById('aura-chat-messages');
+            var wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-2 items-start';
+            wrapper.innerHTML = '<div class="w-7 h-7 rounded-full bg-aura-600 flex items-center justify-center flex-shrink-0 mt-0.5"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
+                '<div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-md px-4 py-2.5 text-sm text-gray-200 max-w-[80%] leading-relaxed">' + html.replace(/\n/g, '<br>') + '</div>';
+            container.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function addUserMessage(text) {
+            var container = document.getElementById('aura-chat-messages');
+            var wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-end';
+            wrapper.innerHTML = '<div class="bg-aura-600 rounded-2xl rounded-tr-md px-4 py-2.5 text-sm text-white max-w-[80%]">' + escapeHtml(text) + '</div>';
+            container.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function showQuickReplies(options) {
+            var container = document.getElementById('aura-chat-messages');
+            var wrapper = document.createElement('div');
+            wrapper.className = 'aura-quick-replies flex flex-wrap gap-2 pl-9';
+            options.forEach(function(opt) {
+                var btn = document.createElement('button');
+                btn.className = 'text-xs px-3 py-1.5 rounded-full border border-aura-500/40 text-aura-400 hover:bg-aura-600/20 hover:text-aura-300 transition';
+                btn.textContent = opt.label;
+                btn.onclick = function() { handleQuickReply(opt.key, opt.label); };
+                wrapper.appendChild(btn);
+            });
+            container.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function removeQuickReplies() {
+            var all = document.querySelectorAll('.aura-quick-replies');
+            all.forEach(function(el) { el.remove(); });
+        }
+
+        function handleQuickReply(key, label) {
+            removeQuickReplies();
+            addUserMessage(label);
+
+            if (key === 'menu') {
+                setTimeout(function() {
+                    addBotMessage("What else can I help you with?");
+                    setTimeout(function() { showQuickReplies(quickReplies); }, 300);
+                }, 500);
+                return;
+            }
+
+            var resp = responses[key];
+            if (!resp) return;
+
+            setTimeout(function() {
+                showTyping();
+                setTimeout(function() {
+                    removeTyping();
+                    if (resp.text) addBotMessage(resp.text);
+                    if (resp.action) { setTimeout(resp.action, 800); }
+                    if (resp.followUp) {
+                        setTimeout(function() { showQuickReplies(resp.followUp); }, 300);
+                    }
+                }, 800 + Math.random() * 600);
+            }, 300);
+        }
+
+        function sendUserMessage() {
+            var input = document.getElementById('aura-chat-input');
+            var text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            removeQuickReplies();
+            addUserMessage(text);
+
+            var lower = text.toLowerCase();
+            var matchedKey = null;
+
+            for (var i = 0; i < keywords.length; i++) {
+                for (var j = 0; j < keywords[i].patterns.length; j++) {
+                    if (lower.indexOf(keywords[i].patterns[j]) !== -1) {
+                        matchedKey = keywords[i].key;
+                        break;
+                    }
+                }
+                if (matchedKey) break;
+            }
+
+            setTimeout(function() {
+                showTyping();
+                setTimeout(function() {
+                    removeTyping();
+                    if (matchedKey === '_greeting') {
+                        addBotMessage("Hey there! What can I help you with?");
+                        setTimeout(function() { showQuickReplies(quickReplies); }, 300);
+                    } else if (matchedKey && responses[matchedKey]) {
+                        var resp = responses[matchedKey];
+                        if (resp.text) addBotMessage(resp.text);
+                        if (resp.action) { setTimeout(resp.action, 800); }
+                        if (resp.followUp) {
+                            setTimeout(function() { showQuickReplies(resp.followUp); }, 300);
+                        }
+                    } else {
+                        addBotMessage("I'm not sure about that one! Here are some things I can help with:");
+                        setTimeout(function() { showQuickReplies(quickReplies); }, 300);
+                    }
+                }, 800 + Math.random() * 600);
+            }, 300);
+        }
+
+        function showTyping() {
+            var container = document.getElementById('aura-chat-messages');
+            var wrapper = document.createElement('div');
+            wrapper.id = 'aura-typing';
+            wrapper.className = 'flex gap-2 items-start';
+            wrapper.innerHTML = '<div class="w-7 h-7 rounded-full bg-aura-600 flex items-center justify-center flex-shrink-0 mt-0.5"><img src="/static/images/icon.ico" class="w-4 h-4 rounded-sm" /></div>' +
+                '<div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-md px-4 py-3 flex gap-1">' +
+                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0s;"></span>' +
+                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0.2s;"></span>' +
+                '<span class="w-2 h-2 bg-gray-400 rounded-full" style="animation: auraBounce 1.2s infinite 0.4s;"></span></div>';
+            container.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function removeTyping() {
+            var el = document.getElementById('aura-typing');
+            if (el) el.remove();
+        }
+
+        function scrollToBottom() {
+            var container = document.getElementById('aura-chat-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(t) {
+            var d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+
+        return { toggle: toggle, sendUserMessage: sendUserMessage };
+    })();
+    </script>
+    <style>
+        @keyframes auraBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+    </style>
+
     <script>
         lucide.createIcons();
 
