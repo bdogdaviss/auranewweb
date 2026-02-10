@@ -83,7 +83,10 @@
     <nav class="fixed top-0 w-full z-50 glass border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 md:gap-8">
+                    <button onclick="toggleMobileNav()" class="md:hidden p-2 text-gray-300 hover:text-white transition">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
                     <a href="/" class="flex items-center gap-2">
                         <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
                         <span class="font-bold text-xl tracking-tight">Aura</span>
@@ -140,6 +143,61 @@
         </div>
     </div>
     <div id="cart-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="toggleCart()"></div>
+
+    <!-- Mobile Navigation Sidebar -->
+    <div id="mobile-nav-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden" onclick="toggleMobileNav()"></div>
+    <div id="mobile-nav" class="fixed inset-y-0 left-0 w-72 bg-gray-900/95 backdrop-blur-xl border-r border-gray-800 transform -translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-xl tracking-tight">Aura</span>
+                </a>
+                <button onclick="toggleMobileNav()" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-1 flex-1">
+                <a href="/" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    Home
+                </a>
+                <a href="/features" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    Features
+                </a>
+                <a href="/pricing" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <i data-lucide="tag" class="w-5 h-5"></i>
+                    Pricing
+                </a>
+                <a href="/download" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <i data-lucide="download" class="w-5 h-5"></i>
+                    Download
+                </a>
+                <a href="/about" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    About
+                </a>
+            </nav>
+            <div class="border-t border-gray-800 pt-4">
+                {{if .User}}
+                <div class="flex items-center gap-3 px-3 py-2">
+                    <img src="{{.User.Avatar}}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-700">
+                    <span class="text-sm text-gray-300">{{.User.Name}}</span>
+                </div>
+                <a href="/logout" class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition text-sm">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    Logout
+                </a>
+                {{else}}
+                <div class="flex flex-col gap-2">
+                    <a href="/login" class="text-center text-sm text-gray-300 hover:text-white py-2.5 rounded-lg border border-gray-700 hover:border-gray-600 transition">Log in</a>
+                    <a href="/register" class="text-center text-sm bg-aura-600 hover:bg-aura-700 text-white py-2.5 rounded-lg font-medium transition">Sign up</a>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="pt-16">
@@ -538,6 +596,22 @@
             totalEl.textContent = '$' + cart.total.toFixed(2);
         }
         
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobile-nav');
+            const overlay = document.getElementById('mobile-nav-overlay');
+            const isOpen = !nav.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                nav.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            } else {
+                nav.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
         function toggleCart() {
             const sidebar = document.getElementById('cart-sidebar');
             const overlay = document.getElementById('cart-overlay');
