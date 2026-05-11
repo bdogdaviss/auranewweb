@@ -6,6 +6,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"sync"
 
 	"github.com/stripe/stripe-go/v78"
 
@@ -27,6 +28,11 @@ type Deps struct {
 
 type StripeHandler struct {
 	deps Deps
+	// processedEvents tracks event.IDs already handled, so Stripe's retry-on-5xx
+	// behaviour doesn't double-fire MarkUserPro. In-memory: resets on restart,
+	// which is acceptable while users/IsPro also live in memory. Swap for a
+	// durable store before introducing a real DB or running multiple replicas.
+	processedEvents sync.Map
 }
 
 func NewStripeHandler(deps Deps) *StripeHandler {
@@ -93,6 +99,12 @@ func (h *StripeHandler) Webhook(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("stripe webhook verify: %v", err)
 		writeJSONError(w, http.StatusBadRequest, "signature verification failed")
+		return
+	}
+
+	if _, alreadySeen := h.processedEvents.LoadOrStore(event.ID, struct{}{}); alreadySeen {
+		log.Printf("stripe webhook: duplicate event %s, skipping", event.ID)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
