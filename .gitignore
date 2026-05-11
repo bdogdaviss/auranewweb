@@ -20,3 +20,9 @@ Thumbs.db
 *.test
 *.out
 coverage.txt
+
+# Go local build cache (90+ MB, no value in version control)
+.gocache/
+
+# Claude Code per-machine settings (team-shared settings.json may still be tracked)
+.claude/settings.local.json
