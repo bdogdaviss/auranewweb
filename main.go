@@ -16,14 +16,22 @@ import (
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	stripehandler "aura-optimizer/api/handlers/payment"
+	paysvc "aura-optimizer/internal/payment"
 )
 
-// PayPal configuration - set these as environment variables
+// PayPal configuration - set these as environment variables.
+// No defaults: leaving either credential empty disables the PayPal routes.
 var (
-	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "AUF161yb2pAbNkVt-Hnaka0T2aCdPjC8Peaz5P8LHaeEzFdxANQ4Nq3bHSZwO_nLmXkGqK93CnkrVLzE")
-	paypalSecret   = getEnv("PAYPAL_SECRET", "EBCPsXsAV5sNAu-QwCT4H5u8jjyawKS6vZ_LxnDxoZ0VZ0kmZlmVLhV_wKgRUnyEOnOsTQkGlWui1fg6")
-	paypalBaseURL  = normalizePayPalBaseURL(getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com")) // Use https://api-m.paypal.com for live
+	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "")
+	paypalSecret   = getEnv("PAYPAL_SECRET", "")
+	paypalBaseURL  = normalizePayPalBaseURL(getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com")) // Use https://api-m.sandbox.paypal.com for sandbox
 )
+
+// Stripe publishable key (front-end). Secret key is read inside internal/payment.
+// Empty value means the checkout page hides the Card option.
+var stripePublishableKey = getEnv("STRIPE_PUBLISHABLE_KEY", "")
 
 func getEnv(key, fallback string) string {
 	if val := strings.TrimSpace(os.Getenv(key)); val != "" {
@@ -229,10 +237,44 @@ func main() {
 	http.HandleFunc("/api/cart", apiGetCart)
 	http.HandleFunc("/api/checkout", apiCheckout)
 
-	// PayPal Checkout
+	// Checkout page is always available; payment-provider APIs register conditionally below.
 	http.HandleFunc("/checkout", checkoutPageHandler)
-	http.HandleFunc("/api/paypal/create-order", apiPayPalCreateOrder)
-	http.HandleFunc("/api/paypal/capture-order", apiPayPalCaptureOrder)
+
+	// PayPal API (registered only if PAYPAL_CLIENT_ID and PAYPAL_SECRET are set)
+	if paypalClientID != "" && paypalSecret != "" {
+		http.HandleFunc("/api/paypal/create-order", apiPayPalCreateOrder)
+		http.HandleFunc("/api/paypal/capture-order", apiPayPalCaptureOrder)
+		log.Printf("✅ PayPal routes enabled")
+	} else {
+		log.Printf("⚠️  PayPal credentials not set – PayPal routes disabled")
+	}
+
+	// Stripe Checkout (registered only if STRIPE_SECRET_KEY is set)
+	if svc, err := paysvc.NewStripeService(); err != nil {
+		log.Printf("stripe disabled: %v", err)
+	} else {
+		h := stripehandler.NewStripeHandler(stripehandler.Deps{
+			Service:       svc,
+			LookupProduct: lookupProductForStripe,
+			GetUserID: func(r *http.Request) (string, string) {
+				u := getUser(r)
+				if u == nil {
+					return "", ""
+				}
+				return u.ID, u.Email
+			},
+			MarkUserPro: func(userID string) {
+				mu.Lock()
+				if u, ok := users[userID]; ok {
+					u.IsPro = true
+				}
+				mu.Unlock()
+			},
+		})
+		http.HandleFunc("/api/stripe/create-payment-intent", h.CreatePaymentIntent)
+		http.HandleFunc("/api/stripe/webhook", h.Webhook)
+		log.Printf("✅ Stripe routes enabled")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -545,10 +587,11 @@ func checkoutPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templates.ExecuteTemplate(w, "checkout.html", map[string]interface{}{
-		"User":           user,
-		"Product":        product,
-		"Savings":        savings,
-		"PayPalClientID": paypalClientID,
+		"User":                 user,
+		"Product":              product,
+		"Savings":              savings,
+		"PayPalClientID":       paypalClientID,
+		"StripePublishableKey": stripePublishableKey,
 	})
 }
 
@@ -750,4 +793,13 @@ func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
 		"success": false,
 		"error":   "Payment could not be completed. Status: " + status,
 	})
+}
+
+func lookupProductForStripe(productID string) (stripehandler.Product, bool) {
+	for _, p := range Products {
+		if p.ID == productID {
+			return stripehandler.Product{ID: p.ID, Name: p.Name, Price: p.Price}, true
+		}
+	}
+	return stripehandler.Product{}, false
 }
