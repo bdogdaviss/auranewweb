@@ -242,7 +242,12 @@ func main() {
 	// Email provider. Resend in prod; no-op (logs only) when not configured so
 	// local dev doesn't require a Resend account.
 	if resendKey, resendFrom := getEnv("RESEND_API_KEY", ""), getEnv("RESEND_FROM", ""); resendKey != "" && resendFrom != "" {
-		rm, mailerErr := mailer.NewResendMailer(resendKey, resendFrom)
+		rm, mailerErr := mailer.NewResendMailer(
+			resendKey,
+			resendFrom,
+			getEnv("SUPPORT_EMAIL", ""),       // shown in "Need help?" line; defaults to From address
+			getEnv("AURA_DOWNLOAD_URL", ""),   // the "Download Aura Optimizer" button target
+		)
 		if mailerErr != nil {
 			log.Fatalf("resend mailer init: %v", mailerErr)
 		}
