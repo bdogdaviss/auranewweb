@@ -86,5 +86,10 @@ func (s *StripeService) ParseWebhook(payload []byte, signatureHeader string) (st
 	if s.webhookSecret == "" {
 		return stripe.Event{}, errors.New("STRIPE_WEBHOOK_SECRET is not set")
 	}
-	return webhook.ConstructEvent(payload, signatureHeader, s.webhookSecret)
+	// IgnoreAPIVersionMismatch: the Stripe account's webhook/CLI may use a newer
+	// API version than stripe-go v78 pins (e.g. 2026-04-22.dahlia vs 2024-04-10).
+	// We only consume payment_intent.succeeded.metadata, which is schema-stable;
+	// strict matching would force a re-pin on every Stripe API release.
+	return webhook.ConstructEventWithOptions(payload, signatureHeader, s.webhookSecret,
+		webhook.ConstructEventOptions{IgnoreAPIVersionMismatch: true})
 }
