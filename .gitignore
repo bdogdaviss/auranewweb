@@ -34,10 +34,12 @@ data/
 *.sqlite-shm
 *.sqlite-wal
 
-# Node / Vite frontend
-# - node_modules excluded (size). dist/ stays tracked because go:embed pulls
-#   it into the Go binary at compile time — fresh clones can run `make run`
-#   without needing Node installed.
+# Node / Vite frontend.
+# CI builds frontend/dist as part of the workflow before `go vet`/`go build`,
+# so the build artifact is never committed. Run `cd frontend && npm install
+# && npm run build` locally before `go run`, or just use `make run` (the
+# Makefile handles it).
 frontend/node_modules/
+frontend/dist/
 frontend/.vite/
 frontend/*.log
