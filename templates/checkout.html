@@ -46,6 +46,11 @@
         #paypal-button-container { min-height: 150px; }
         .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .provider-tab { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #9ca3af; background: transparent; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+        .provider-tab.active { color: #fff; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+        .StripeElement { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 0.875rem 1rem; }
+        .StripeElement--focus { border-color: rgba(16, 185, 129, 0.5); }
+        .StripeElement--invalid { border-color: rgba(239, 68, 68, 0.5); }
     </style>
 </head>
 <body class="antialiased">
@@ -130,8 +135,17 @@
                 <div class="md:col-span-3">
                     <h1 class="text-2xl font-bold mb-6">Complete your purchase</h1>
 
-                    <!-- Express Checkout (PayPal Buttons) -->
-                    <div class="glass rounded-2xl p-6 mb-6">
+                    {{if and .PayPalClientID .StripePublishableKey}}
+                    <!-- Provider tabs (shown only when both providers are configured) -->
+                    <div class="glass rounded-2xl p-2 mb-4 flex gap-2">
+                        <button type="button" class="provider-tab active" data-provider="paypal">PayPal</button>
+                        <button type="button" class="provider-tab" data-provider="stripe">Card</button>
+                    </div>
+                    {{end}}
+
+                    {{if .PayPalClientID}}
+                    <!-- PayPal panel -->
+                    <div id="panel-paypal" class="glass rounded-2xl p-6 mb-6">
                         <h3 class="text-sm font-medium text-gray-400 mb-4">Express Checkout</h3>
                         <div id="paypal-loading" class="flex items-center justify-center py-8">
                             <div class="spinner"></div>
@@ -139,6 +153,29 @@
                         </div>
                         <div id="paypal-button-container"></div>
                     </div>
+                    {{end}}
+
+                    {{if .StripePublishableKey}}
+                    <!-- Stripe panel -->
+                    <div id="panel-stripe" class="glass rounded-2xl p-6 mb-6" {{if .PayPalClientID}}style="display:none;"{{end}}>
+                        <h3 class="text-sm font-medium text-gray-400 mb-4">Pay with Card</h3>
+                        <form id="stripe-form" class="space-y-4">
+                            <div id="stripe-card-element"></div>
+                            <div id="stripe-card-errors" class="text-xs text-red-400 min-h-[1rem]" role="alert"></div>
+                            <button type="submit" id="stripe-submit"
+                                class="w-full bg-aura-500 hover:bg-aura-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2">
+                                <span id="stripe-submit-text">Pay ${{.Product.Price}}</span>
+                                <span id="stripe-submit-spinner" class="spinner hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                    {{end}}
+
+                    {{if not (or .PayPalClientID .StripePublishableKey)}}
+                    <div class="glass rounded-2xl p-6 mb-6 text-center text-sm text-red-400">
+                        No payment provider is configured. Please contact support.
+                    </div>
+                    {{end}}
 
                     <!-- Status Messages -->
                     <div id="result-message" class="hidden rounded-xl p-4 mb-4 text-sm"></div>
@@ -146,7 +183,7 @@
                     <!-- Security Notice -->
                     <div class="flex items-center gap-3 text-xs text-gray-500 mt-4">
                         <i data-lucide="shield-check" class="w-4 h-4 text-aura-600"></i>
-                        <span>Payments are secured and processed by PayPal. Your financial information is never stored on our servers.</span>
+                        <span>Payments are secured by PayPal and Stripe. Your card details never touch our servers.</span>
                     </div>
                 </div>
             </div>
@@ -176,16 +213,9 @@
         lucide.createIcons();
     </script>
 
-    <!-- PayPal JS SDK -->
-    <script
-        src="https://www.paypal.com/sdk/js?client-id={{.PayPalClientID}}&currency=USD&intent=capture&components=buttons&enable-funding=venmo,paylater"
-        onerror="document.getElementById('paypal-loading').style.display='none'; document.getElementById('paypal-button-container').innerHTML='<p class=\'text-center text-sm text-red-400 py-8\'>Failed to load payment provider. Please refresh the page or try again later.</p>';"
-    ></script>
-
     <script>
         const productID = "{{.Product.ID}}";
         const resultMessage = document.getElementById("result-message");
-        const paypalLoading = document.getElementById("paypal-loading");
 
         function showMessage(message, isError) {
             resultMessage.className = isError
@@ -195,19 +225,39 @@
             resultMessage.classList.remove("hidden");
         }
 
-        if (typeof paypal === "undefined") {
-            paypalLoading.style.display = "none";
-            document.getElementById("paypal-button-container").innerHTML =
-                '<p class="text-center text-sm text-red-400 py-8">Payment provider unavailable. Please refresh the page or try again later.</p>';
-        } else {
+        // Provider tab switching (only present when both providers are configured)
+        document.querySelectorAll(".provider-tab").forEach(function(tab) {
+            tab.addEventListener("click", function() {
+                document.querySelectorAll(".provider-tab").forEach(function(t) { t.classList.remove("active"); });
+                tab.classList.add("active");
+                const provider = tab.dataset.provider;
+                const paypalPanel = document.getElementById("panel-paypal");
+                const stripePanel = document.getElementById("panel-stripe");
+                if (paypalPanel) paypalPanel.style.display = (provider === "paypal") ? "" : "none";
+                if (stripePanel) stripePanel.style.display = (provider === "stripe") ? "" : "none";
+            });
+        });
+    </script>
+
+    {{if .PayPalClientID}}
+    <!-- PayPal JS SDK -->
+    <script
+        src="https://www.paypal.com/sdk/js?client-id={{.PayPalClientID}}&currency=USD&intent=capture&components=buttons&enable-funding=venmo,paylater"
+        onerror="document.getElementById('paypal-loading').style.display='none'; document.getElementById('paypal-button-container').innerHTML='<p class=\'text-center text-sm text-red-400 py-8\'>Failed to load payment provider. Please refresh the page or try again later.</p>';"
+    ></script>
+    <script>
+        (function() {
+            const paypalLoading = document.getElementById("paypal-loading");
+
+            if (typeof paypal === "undefined") {
+                paypalLoading.style.display = "none";
+                document.getElementById("paypal-button-container").innerHTML =
+                    '<p class="text-center text-sm text-red-400 py-8">Payment provider unavailable. Please refresh the page or try again later.</p>';
+                return;
+            }
+
             paypal.Buttons({
-                style: {
-                    layout: "vertical",
-                    shape: "rect",
-                    label: "paypal",
-                    color: "gold",
-                    tagline: false,
-                },
+                style: { layout: "vertical", shape: "rect", label: "paypal", color: "gold", tagline: false },
 
                 createOrder: async function() {
                     try {
@@ -217,10 +267,7 @@
                             body: JSON.stringify({ product_id: productID }),
                         });
                         const data = await response.json();
-
-                        if (data.id) {
-                            return data.id;
-                        }
+                        if (data.id) return data.id;
                         throw new Error(data.error || "Could not create order.");
                     } catch (error) {
                         showMessage("Failed to start checkout: " + error.message, true);
@@ -236,12 +283,9 @@
                             body: JSON.stringify({ order_id: data.orderID }),
                         });
                         const orderData = await response.json();
-
                         if (orderData.success) {
                             showMessage("Payment successful! Redirecting...", false);
-                            setTimeout(function() {
-                                window.location.href = "/download";
-                            }, 1500);
+                            setTimeout(function() { window.location.href = "/download"; }, 1500);
                         } else {
                             throw new Error(orderData.error || "Payment could not be captured.");
                         }
@@ -250,9 +294,7 @@
                     }
                 },
 
-                onCancel: function() {
-                    showMessage("Payment was cancelled. You can try again anytime.", true);
-                },
+                onCancel: function() { showMessage("Payment was cancelled. You can try again anytime.", true); },
 
                 onError: function(err) {
                     console.error("PayPal error:", err);
@@ -266,7 +308,88 @@
                 document.getElementById("paypal-button-container").innerHTML =
                     '<p class="text-center text-sm text-red-400 py-8">Could not load payment buttons. Please refresh the page or try again later.</p>';
             });
-        }
+        })();
     </script>
+    {{end}}
+
+    {{if .StripePublishableKey}}
+    <!-- Stripe.js (v3 is the current public release; unrelated to stripe-go's v78) -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        (function() {
+            if (typeof Stripe === "undefined") {
+                document.getElementById("stripe-card-errors").textContent = "Stripe.js failed to load.";
+                return;
+            }
+
+            const stripe = Stripe("{{.StripePublishableKey}}");
+            const elements = stripe.elements();
+            const card = elements.create("card", {
+                style: {
+                    base: {
+                        color: "#ffffff",
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "16px",
+                        "::placeholder": { color: "#6b7280" },
+                    },
+                    invalid: { color: "#f87171" },
+                },
+            });
+            card.mount("#stripe-card-element");
+
+            const errorEl = document.getElementById("stripe-card-errors");
+            card.on("change", function(event) {
+                errorEl.textContent = event.error ? event.error.message : "";
+            });
+
+            const form = document.getElementById("stripe-form");
+            const submitBtn = document.getElementById("stripe-submit");
+            const submitText = document.getElementById("stripe-submit-text");
+            const submitSpinner = document.getElementById("stripe-submit-spinner");
+
+            form.addEventListener("submit", async function(e) {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitText.textContent = "Processing…";
+                submitSpinner.classList.remove("hidden");
+                errorEl.textContent = "";
+
+                try {
+                    // Server derives amount from product_id — never trust client-side amounts.
+                    const resp = await fetch("/api/stripe/create-payment-intent", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ product_id: productID }),
+                    });
+                    if (!resp.ok) {
+                        const errData = await resp.json().catch(function() { return {}; });
+                        throw new Error(errData.error || "Server rejected payment request.");
+                    }
+                    const intent = await resp.json();
+
+                    const result = await stripe.confirmCardPayment(intent.client_secret, {
+                        payment_method: { card: card },
+                    });
+
+                    if (result.error) {
+                        throw new Error(result.error.message);
+                    }
+                    if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+                        showMessage("Payment successful! Redirecting…", false);
+                        setTimeout(function() { window.location.href = "/download"; }, 1500);
+                    } else {
+                        throw new Error("Payment did not succeed (status: " + (result.paymentIntent && result.paymentIntent.status) + ").");
+                    }
+                } catch (err) {
+                    console.error("Stripe error:", err);
+                    errorEl.textContent = err.message || "Payment failed.";
+                    submitBtn.disabled = false;
+                    submitText.textContent = "Pay ${{.Product.Price}}";
+                    submitSpinner.classList.add("hidden");
+                }
+            });
+        })();
+    </script>
+    {{end}}
 </body>
 </html>

@@ -1,1 +1,28 @@
 static/downloads/aura-setup.exe
+
+# Build output
+bin/
+*.exe
+*.exe~
+
+# Environment files (real secrets)
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Go test artifacts
+*.test
+*.out
+coverage.txt
+
+# Go local build cache (90+ MB, no value in version control)
+.gocache/
+
+# Claude Code per-machine settings (team-shared settings.json may still be tracked)
+.claude/settings.local.json

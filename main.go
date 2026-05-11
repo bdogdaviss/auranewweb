@@ -16,14 +16,22 @@ import (
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	stripehandler "aura-optimizer/api/handlers/payment"
+	paysvc "aura-optimizer/internal/payment"
 )
 
-// PayPal configuration - set these as environment variables
+// PayPal configuration - set these as environment variables.
+// No defaults: leaving either credential empty disables the PayPal routes.
 var (
-	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "AUF161yb2pAbNkVt-Hnaka0T2aCdPjC8Peaz5P8LHaeEzFdxANQ4Nq3bHSZwO_nLmXkGqK93CnkrVLzE")
-	paypalSecret   = getEnv("PAYPAL_SECRET", "EBCPsXsAV5sNAu-QwCT4H5u8jjyawKS6vZ_LxnDxoZ0VZ0kmZlmVLhV_wKgRUnyEOnOsTQkGlWui1fg6")
-	paypalBaseURL  = normalizePayPalBaseURL(getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com")) // Use https://api-m.paypal.com for live
+	paypalClientID = getEnv("PAYPAL_CLIENT_ID", "")
+	paypalSecret   = getEnv("PAYPAL_SECRET", "")
+	paypalBaseURL  = normalizePayPalBaseURL(getEnv("PAYPAL_BASE_URL", "https://api-m.paypal.com")) // Use https://api-m.sandbox.paypal.com for sandbox
 )
+
+// Stripe publishable key (front-end). Secret key is read inside internal/payment.
+// Empty value means the checkout page hides the Card option.
+var stripePublishableKey = getEnv("STRIPE_PUBLISHABLE_KEY", "")
 
 func getEnv(key, fallback string) string {
 	if val := strings.TrimSpace(os.Getenv(key)); val != "" {
@@ -229,10 +237,44 @@ func main() {
 	http.HandleFunc("/api/cart", apiGetCart)
 	http.HandleFunc("/api/checkout", apiCheckout)
 
-	// PayPal Checkout
+	// Checkout page is always available; payment-provider APIs register conditionally below.
 	http.HandleFunc("/checkout", checkoutPageHandler)
-	http.HandleFunc("/api/paypal/create-order", apiPayPalCreateOrder)
-	http.HandleFunc("/api/paypal/capture-order", apiPayPalCaptureOrder)
+
+	// PayPal API (registered only if PAYPAL_CLIENT_ID and PAYPAL_SECRET are set)
+	if paypalClientID != "" && paypalSecret != "" {
+		http.HandleFunc("/api/paypal/create-order", apiPayPalCreateOrder)
+		http.HandleFunc("/api/paypal/capture-order", apiPayPalCaptureOrder)
+		log.Printf("✅ PayPal routes enabled")
+	} else {
+		log.Printf("⚠️  PayPal credentials not set – PayPal routes disabled")
+	}
+
+	// Stripe Checkout (registered only if STRIPE_SECRET_KEY is set)
+	if svc, err := paysvc.NewStripeService(); err != nil {
+		log.Printf("stripe disabled: %v", err)
+	} else {
+		h := stripehandler.NewStripeHandler(stripehandler.Deps{
+			Service:       svc,
+			LookupProduct: lookupProductForStripe,
+			GetUserID: func(r *http.Request) (string, string) {
+				u := getUser(r)
+				if u == nil {
+					return "", ""
+				}
+				return u.ID, u.Email
+			},
+			MarkUserPro: func(userID string) {
+				mu.Lock()
+				if u, ok := users[userID]; ok {
+					u.IsPro = true
+				}
+				mu.Unlock()
+			},
+		})
+		http.HandleFunc("/api/stripe/create-payment-intent", h.CreatePaymentIntent)
+		http.HandleFunc("/api/stripe/webhook", h.Webhook)
+		log.Printf("✅ Stripe routes enabled")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -268,7 +310,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		"Stats":        Stats,
 		"ShowCart":     true,
 	}
-	templates.ExecuteTemplate(w, "index.html", data)
+	_ = templates.ExecuteTemplate(w, "index.html", data)
 }
 
 func loginPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -276,11 +318,11 @@ func loginPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/api/auth/login", http.StatusSeeOther)
 		return
 	}
-	templates.ExecuteTemplate(w, "login.html", nil)
+	_ = templates.ExecuteTemplate(w, "login.html", nil)
 }
 
 func registerPageHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "register.html", nil)
+	_ = templates.ExecuteTemplate(w, "register.html", nil)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -301,7 +343,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func pricingHandler(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	templates.ExecuteTemplate(w, "pricing.html", map[string]interface{}{
+	_ = templates.ExecuteTemplate(w, "pricing.html", map[string]interface{}{
 		"User":     user,
 		"Products": Products,
 	})
@@ -316,7 +358,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		mu.Unlock()
 	}
 
-	templates.ExecuteTemplate(w, "download.html", map[string]interface{}{
+	_ = templates.ExecuteTemplate(w, "download.html", map[string]interface{}{
 		"User":        user,
 		"DownloadURL": os.Getenv("AURA_DOWNLOAD_URL"),
 	})
@@ -324,12 +366,12 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	templates.ExecuteTemplate(w, "about.html", map[string]interface{}{"User": user})
+	_ = templates.ExecuteTemplate(w, "about.html", map[string]interface{}{"User": user})
 }
 
 func featuresHandler(w http.ResponseWriter, r *http.Request) {
 	user := getUser(r)
-	templates.ExecuteTemplate(w, "features.html", map[string]interface{}{"User": user})
+	_ = templates.ExecuteTemplate(w, "features.html", map[string]interface{}{"User": user})
 }
 
 // API Handlers
@@ -343,7 +385,7 @@ func apiLogin(w http.ResponseWriter, r *http.Request) {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	// Demo: auto-create or verify
 	mu.Lock()
@@ -384,7 +426,7 @@ func apiLogin(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "user": user})
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "user": user})
 }
 
 func apiRegister(w http.ResponseWriter, r *http.Request) {
@@ -401,14 +443,14 @@ func apiAddToCart(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		ProductID string `json:"product_id"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	mu.Lock()
 	carts[user.ID] = append(carts[user.ID], req.ProductID)
 	mu.Unlock()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
 }
 
 func buildCartProducts(items []string) ([]Product, float64) {
@@ -461,7 +503,7 @@ func apiRemoveFromCart(w http.ResponseWriter, r *http.Request) {
 	cartProducts, total := buildCartProducts(updated)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": removed,
 		"items":   cartProducts,
 		"total":   total,
@@ -483,7 +525,7 @@ func apiGetCart(w http.ResponseWriter, r *http.Request) {
 	cartProducts, total := buildCartProducts(items)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"items": cartProducts,
 		"total": total,
 		"count": len(items),
@@ -510,7 +552,7 @@ func apiCheckout(w http.ResponseWriter, r *http.Request) {
 	mu.Unlock()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"success":  true,
 		"message":  "Payment successful!",
 		"redirect": "/download",
@@ -544,11 +586,12 @@ func checkoutPageHandler(w http.ResponseWriter, r *http.Request) {
 		savings = fmt.Sprintf("%.2f", product.ComparePrice-product.Price)
 	}
 
-	templates.ExecuteTemplate(w, "checkout.html", map[string]interface{}{
-		"User":           user,
-		"Product":        product,
-		"Savings":        savings,
-		"PayPalClientID": paypalClientID,
+	_ = templates.ExecuteTemplate(w, "checkout.html", map[string]interface{}{
+		"User":                 user,
+		"Product":              product,
+		"Savings":              savings,
+		"PayPalClientID":       paypalClientID,
+		"StripePublishableKey": stripePublishableKey,
 	})
 }
 
@@ -588,7 +631,7 @@ func apiPayPalCreateOrder(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		ProductID string `json:"product_id"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	var product *Product
 	for _, p := range Products {
@@ -678,7 +721,7 @@ func apiPayPalCreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(respBody)
+	_, _ = w.Write(respBody)
 }
 
 func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
@@ -690,7 +733,7 @@ func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		OrderID string `json:"order_id"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	if req.OrderID == "" {
 		http.Error(w, `{"error":"order_id required"}`, http.StatusBadRequest)
@@ -722,7 +765,7 @@ func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
 	respBody, _ := io.ReadAll(resp.Body)
 
 	var captureResult map[string]interface{}
-	json.Unmarshal(respBody, &captureResult)
+	_ = json.Unmarshal(respBody, &captureResult)
 
 	status, _ := captureResult["status"].(string)
 	if status == "COMPLETED" {
@@ -735,7 +778,7 @@ func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"success":  true,
 			"order_id": req.OrderID,
 			"status":   status,
@@ -746,8 +789,17 @@ func apiPayPalCaptureOrder(w http.ResponseWriter, r *http.Request) {
 	log.Printf("PayPal capture status: %s, body: %s", status, string(respBody))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": false,
 		"error":   "Payment could not be completed. Status: " + status,
 	})
+}
+
+func lookupProductForStripe(productID string) (stripehandler.Product, bool) {
+	for _, p := range Products {
+		if p.ID == productID {
+			return stripehandler.Product{ID: p.ID, Name: p.Name, Price: p.Price}, true
+		}
+	}
+	return stripehandler.Product{}, false
 }
