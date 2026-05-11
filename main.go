@@ -97,24 +97,6 @@ type Product struct {
 	Color        string   `json:"color"`
 }
 
-type Testimonial struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Handle    string `json:"handle"`
-	Avatar    string `json:"avatar"`
-	Content   string `json:"content"`
-	Rating    int    `json:"rating"`
-	Game      string `json:"game"`
-	FPSBefore int    `json:"fps_before"`
-	FPSAfter  int    `json:"fps_after"`
-}
-
-type Stat struct {
-	Label  string `json:"label"`
-	Value  string `json:"value"`
-	Change string `json:"change,omitempty"`
-}
-
 // Global stores
 var (
 	users    = make(map[string]*User)
@@ -124,9 +106,7 @@ var (
 
 	templates *template.Template
 
-	Products     []Product
-	Testimonials []Testimonial
-	Stats        []Stat
+	Products []Product
 )
 
 func init() {
@@ -171,48 +151,6 @@ func initData() {
 		},
 	}
 
-	Testimonials = []Testimonial{
-		{
-			ID:        "1",
-			Name:      "Alex",
-			Handle:    "@alexfn",
-			Avatar:    "A",
-			Content:   "Went from 120 FPS to 240 FPS in Valorant. Game changer!",
-			Rating:    5,
-			Game:      "Valorant",
-			FPSBefore: 120,
-			FPSAfter:  240,
-		},
-		{
-			ID:        "2",
-			Name:      "Sarah",
-			Handle:    "@sarahgaming",
-			Avatar:    "S",
-			Content:   "Finally no more stutters in Fortnite. Smooth 60fps on my old laptop!",
-			Rating:    5,
-			Game:      "Fortnite",
-			FPSBefore: 45,
-			FPSAfter:  75,
-		},
-		{
-			ID:        "3",
-			Name:      "Mike",
-			Handle:    "@mikepro",
-			Avatar:    "M",
-			Content:   "The AI tuning actually works. My setup has never been this responsive.",
-			Rating:    5,
-			Game:      "Apex Legends",
-			FPSBefore: 80,
-			FPSAfter:  144,
-		},
-	}
-
-	Stats = []Stat{
-		{Label: "Active Users", Value: "50K+", Change: "+12% this month"},
-		{Label: "Avg FPS Boost", Value: "+47%", Change: "Verified by users"},
-		{Label: "Countries", Value: "120+", Change: "Global reach"},
-		{Label: "Support Rating", Value: "4.9/5", Change: "24/7 support"},
-	}
 }
 
 func main() {
@@ -378,17 +316,12 @@ func getUser(r *http.Request) *User {
 	return user
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUser(r)
-	data := map[string]interface{}{
-		"User":         user,
-		"Products":     Products,
-		"Testimonials": Testimonials,
-		"Stats":        Stats,
-		"ShowCart":     true,
-	}
-	_ = templates.ExecuteTemplate(w, "index.html", data)
-}
+// The home / pricing / about / features handlers used to render templates
+// here; those routes are now owned by the React SPA in frontend/dist and
+// served by serveSPA (see bottom of file). Their template files (index.html,
+// pricing.html, about.html, features.html) remain on disk but are no longer
+// referenced — left in place so a future revert is a one-line route
+// registration, not a template rewrite.
 
 func loginPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
@@ -416,14 +349,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-func pricingHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUser(r)
-	_ = templates.ExecuteTemplate(w, "pricing.html", map[string]interface{}{
-		"User":     user,
-		"Products": Products,
-	})
 }
 
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -462,15 +387,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUser(r)
-	_ = templates.ExecuteTemplate(w, "about.html", map[string]interface{}{"User": user})
-}
-
-func featuresHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUser(r)
-	_ = templates.ExecuteTemplate(w, "features.html", map[string]interface{}{"User": user})
-}
 
 // API Handlers
 func apiLogin(w http.ResponseWriter, r *http.Request) {
