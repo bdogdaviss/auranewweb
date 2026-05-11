@@ -27,9 +27,21 @@ coverage.txt
 # Claude Code per-machine settings (team-shared settings.json may still be tracked)
 .claude/settings.local.json
 
-# SQLite runtime files (license keys + processed webhook events)
-data/
+# SQLite runtime files (license keys + processed webhook events).
+# Anchored to repo root with the leading slash so it doesn't also match
+# frontend/src/data (which is product catalogue source code).
+/data/
 *.sqlite
 *.sqlite-journal
 *.sqlite-shm
 *.sqlite-wal
+
+# Node / Vite frontend.
+# CI builds frontend/dist as part of the workflow before `go vet`/`go build`,
+# so the build artifact is never committed. Run `cd frontend && npm install
+# && npm run build` locally before `go run`, or just use `make run` (the
+# Makefile handles it).
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.log
