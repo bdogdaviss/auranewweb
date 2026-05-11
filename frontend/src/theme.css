@@ -3,33 +3,101 @@
    user uploads it. Until then this is a faithful-ish approximation. */
 
 :root {
-  /* Background + surface */
-  --bg-base: #04060a;
-  --bg-overlay: rgba(4, 6, 10, 0.78);
-  --bg-card: rgba(14, 18, 28, 0.6);
-  --bg-card-hover: rgba(20, 24, 36, 0.72);
+  /* ===================================================================
+     Radix Themes color tokens — dark-mode scales.
+     12-step scales per scale (slate/green/yellow) following Radix
+     conventions:
+        1–2   page + subtle surface
+        3–5   interactive component fills
+        6–8   borders + separators
+        9–10  solid colors (the "brand" step is 9)
+        11–12 accessible text
+     Each scale is sourced from radix-ui/colors (dark-mode variants).
+     ================================================================= */
+
+  /* Black + white anchors */
+  --black: #000000;
+  --white: #ffffff;
+
+  /* Gray — slate variant (cool-tinted gray, fits a dark gaming UI) */
+  --gray-1:  #111113;
+  --gray-2:  #18191b;
+  --gray-3:  #212225;
+  --gray-4:  #272a2d;
+  --gray-5:  #2e3135;
+  --gray-6:  #363a3f;
+  --gray-7:  #43484e;
+  --gray-8:  #5a6169;
+  --gray-9:  #696e77;
+  --gray-10: #777b84;
+  --gray-11: #b0b4ba;
+  --gray-12: #edeef0;
+
+  /* Green */
+  --green-1:  #0d1912;
+  --green-2:  #0c1f17;
+  --green-3:  #0f291e;
+  --green-4:  #09341e;
+  --green-5:  #0c4225;
+  --green-6:  #0d502a;
+  --green-7:  #0e603c;
+  --green-8:  #0f7549;
+  --green-9:  #30a46c;
+  --green-10: #3cb179;
+  --green-11: #4cc38a;
+  --green-12: #b1ecc2;
+
+  /* Yellow */
+  --yellow-1:  #14120b;
+  --yellow-2:  #1b180f;
+  --yellow-3:  #2d2305;
+  --yellow-4:  #362b00;
+  --yellow-5:  #433500;
+  --yellow-6:  #524202;
+  --yellow-7:  #665417;
+  --yellow-8:  #836a21;
+  --yellow-9:  #ffe629;
+  --yellow-10: #ffff57;
+  --yellow-11: #f5e147;
+  --yellow-12: #f6eeb4;
+
+  /* ===================================================================
+     Semantic tokens — map the legacy variables onto the Radix scales.
+     Existing CSS that references --bg-base / --fg / --border etc. keeps
+     working; the underlying values now come from the Radix system.
+     ================================================================= */
+
+  /* Background + surface — gray-1 is Radix's canonical "page background"
+     step in dark mode (very dark slate, near-black with a faint cool tint).
+     Use --black only where you want a hard, true black. */
+  --bg-base: var(--gray-1);
+  --bg-overlay: rgba(0, 0, 0, 0.78);
+  --bg-card: var(--gray-2);
+  --bg-card-hover: var(--gray-3);
   --bg-glass: rgba(255, 255, 255, 0.02);
 
-  /* Brand / gradient (matches "gradient-text" treatment) */
-  --grad-from: #4ade80;
-  --grad-to: #06b6d4;
+  /* Brand / gradient — white for hero "Performance" headline. */
+  --grad-from: var(--white);
+  --grad-to: var(--white);
 
   /* Foreground */
-  --fg: #e6edf3;
-  --fg-muted: #9aa4b2;
-  --fg-subtle: #6b7280;
+  --fg: var(--gray-12);
+  --fg-muted: var(--gray-11);
+  --fg-subtle: var(--gray-9);
 
-  /* Accents */
-  --accent: #4ade80;
-  --accent-hot: #f97316;
-  --price-original: #6b7280;
-  --price-current: #4ade80;
-  --price-sale: #f97316;
+  /* Accents — green is the primary brand step, yellow is the secondary
+     "deal" highlight, white the high-contrast actor. */
+  --accent: var(--green-9);
+  --accent-hot: var(--yellow-9);
+  --price-original: var(--gray-9);
+  --price-current: var(--white);
+  --price-sale: var(--yellow-9);
+  --price-lifetime: var(--yellow-9);
 
   /* Borders */
-  --border-soft: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-soft: var(--gray-5);
+  --border: var(--gray-6);
+  --border-strong: var(--gray-7);
 
   /* Discord */
   --discord: #5865f2;
@@ -42,8 +110,8 @@
   --radius-lg: 20px;
 
   /* Shadows */
-  --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.35);
-  --shadow-cta: 0 12px 32px rgba(74, 222, 128, 0.18);
+  --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.45);
+  --shadow-cta: 0 12px 32px rgba(48, 164, 108, 0.25);
 
   /* Type */
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -94,7 +162,7 @@ button {
   background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(74, 222, 128, 0.4);
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 6px;
 }
 
@@ -105,7 +173,7 @@ button {
   inset: 0;
   z-index: -3;
   background:
-    radial-gradient(1200px 800px at 20% 0%, rgba(74, 222, 128, 0.08), transparent 60%),
+    radial-gradient(1200px 800px at 20% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
     radial-gradient(900px 700px at 80% 20%, rgba(6, 182, 212, 0.07), transparent 60%),
     var(--bg-base);
 }
@@ -118,17 +186,448 @@ button {
   pointer-events: none;
 }
 
-.grid-pattern {
+/* ------------------- BackgroundRippleEffect ------------------- */
+/* Fixed full-viewport grid of cells. The wrapper has pointer-events: none
+   so it never blocks UI clicks; each cell re-enables pointer-events: auto
+   only on itself. Cells sit at z-index 0; the rest of the app (.main-content,
+   .footer, .anav-fixed) layers above via DOM order + explicit z-index. */
+
+.bg-ripple {
   position: fixed;
   inset: 0;
-  z-index: -2;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(circle at 50% 0%, black, transparent 70%);
+  z-index: 0;
   pointer-events: none;
+  /* Fade the grid out toward the bottom so the page doesn't feel like a
+     uniform sheet of squares — focuses the eye on the upper half. */
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 30%, black, transparent 80%);
+}
+
+.bg-ripple-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+}
+
+.bg-ripple-cell {
+  pointer-events: auto;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.bg-ripple-cell:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ------------------- Lamp (Aceternity-style cyan beam) ------------------- */
+/* Dark section with a cyan conic-gradient cone of light. Five layered
+   absolutely-positioned children inside .lamp-stage compose the beam:
+     1. left cone (motion-animated width)  — conic-gradient slice
+     2. right cone (motion-animated width) — conic-gradient slice
+     3. bottom blur + glass band           — softens the cone's base
+     4. cyan glow halo + cyan blob         — the "bulb"
+     5. thin filament line                 — the lamp emitter itself
+   Plus a top cover that hides the upper half of each cone so the beam
+   appears to start at the filament. */
+
+.lamp-section {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  /* Top/bottom breathing room so the lamp doesn't crowd the hero mockup
+     above it or the Features grid below. */
+  margin: 80px 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Transparent so the lamp blends with the page; mask/cover divs use
+     var(--bg-base) directly to erase cone bleed. The mask divs paint
+     the same grid pattern as the BackgroundRippleEffect so the section
+     interior is visually indistinguishable from the surrounding page. */
+  background: transparent;
+  isolation: isolate;
+}
+
+.lamp-stage {
+  /* Absolute-positioned background layer that fills the section. Children
+     (.lamp-children) sit above this via z-index, illuminated by the beam. */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scaleY(1.25);
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.lamp-cone {
+  position: absolute;
+  inset: auto;
+  height: 14rem;
+  width: 30rem;
+  color: #fff;
+}
+
+.lamp-cone-left {
+  right: 50%;
+  background-image: conic-gradient(
+    from 70deg at center top,
+    var(--green-9),
+    transparent,
+    transparent
+  );
+  /* mask-image clips the cone to a soft beam shape without needing the
+     opaque mask overlay divs. Now the lamp section can be fully
+     transparent (no bg-base masks blocking the ripple grid behind). */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 60%,
+    transparent 95%
+  );
+          mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 60%,
+    transparent 95%
+  );
+}
+
+.lamp-cone-right {
+  left: 50%;
+  background-image: conic-gradient(
+    from 290deg at center top,
+    transparent,
+    transparent,
+    var(--green-9)
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 60%,
+    transparent 95%
+  );
+          mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 60%,
+    transparent 95%
+  );
+}
+
+/* Mask overlay divs disabled — cone clipping is now handled by
+   mask-image on the cones themselves, so the section can be fully
+   transparent and the ripple grid behind shows through unblocked.
+   Keeping the rules empty (display: none) so the JSX stays intact and
+   we can flip back if the mask-image approach has artifacts. */
+.lamp-cone-mask-bottom,
+.lamp-cone-mask-bottom-right,
+.lamp-cone-mask-side,
+.lamp-cone-mask-side-left,
+.lamp-cone-mask-side-right,
+.lamp-top-cover,
+.lamp-bottom-blur,
+.lamp-glass {
+  display: none;
+}
+.lamp-cone-mask-bottom-right {
+  /* Mirrored anchor for the right cone */
+  left: auto;
+  right: 0;
+}
+
+.lamp-cone-mask-side {
+  position: absolute;
+  bottom: 0;
+  width: 10rem;
+  height: 100%;
+  background: rgba(17, 17, 19, 0.92);
+  z-index: 20;
+}
+.lamp-cone-mask-side-left {
+  left: 0;
+  -webkit-mask-image: linear-gradient(to right, white, transparent);
+          mask-image: linear-gradient(to right, white, transparent);
+}
+.lamp-cone-mask-side-right {
+  right: 0;
+  -webkit-mask-image: linear-gradient(to left, white, transparent);
+          mask-image: linear-gradient(to left, white, transparent);
+}
+
+.lamp-bottom-blur {
+  position: absolute;
+  top: 50%;
+  height: 12rem;
+  width: 100%;
+  transform: translateY(3rem) scaleX(1.5);
+  background: var(--bg-base);
+  filter: blur(32px);
+}
+
+.lamp-glass {
+  position: absolute;
+  top: 50%;
+  z-index: 50;
+  height: 12rem;
+  width: 100%;
+  background: transparent;
+  opacity: 0.1;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.lamp-glow {
+  position: absolute;
+  inset: auto;
+  z-index: 50;
+  height: 9rem;
+  width: 28rem;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--green-9);
   opacity: 0.5;
+  filter: blur(64px);
+}
+
+.lamp-blob {
+  position: absolute;
+  inset: auto;
+  z-index: 30;
+  height: 9rem;
+  width: 16rem;
+  transform: translateY(-6rem);
+  border-radius: 9999px;
+  background: var(--green-10);
+  filter: blur(40px);
+}
+
+.lamp-line {
+  /* Filament beam disabled — the cone + halo are enough to read as a lamp
+     without the thin horizontal line at the top. */
+  display: none;
+}
+
+/* ------------------- DownloadModal ------------------- */
+/* Confirmation popup gating the actual GitHub-release download. Mounted
+   at App root; opened by either the hero StatefulDownloadButton or the
+   Starter FeaturedCard via the DownloadModal context. */
+
+.download-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.download-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.download-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.download-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.download-modal-close:hover {
+  background: var(--gray-4);
+  color: var(--fg);
+}
+
+.download-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(48, 164, 108, 0.15);
+  color: var(--green-11);
+  margin-bottom: 18px;
+}
+
+.download-modal-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.download-modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  margin: 0 0 8px;
+}
+
+.download-modal-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-bottom: 16px;
+}
+
+.download-modal-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(48, 164, 108, 0.15);
+  color: var(--green-11);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.download-modal-sep {
+  opacity: 0.5;
+}
+
+.download-modal-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+  margin: 0 0 24px;
+}
+
+/* Primary action — Shimmer style for brand consistency. */
+.download-modal-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background-image: linear-gradient(
+    110deg,
+    #000103 0%,
+    #000103 45%,
+    #1e2631 50%,
+    #000103 55%,
+    #000103 100%
+  );
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  animation: btn-shimmer 2.4s linear infinite;
+  transition: border-color 0.2s;
+}
+
+.download-modal-cta:hover {
+  border-color: var(--green-9);
+}
+
+.download-modal-cta svg {
+  width: 16px;
+  height: 16px;
+}
+
+.download-modal-cancel {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.download-modal-cancel:hover {
+  color: var(--fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .download-modal-cta { animation: none; }
+}
+
+.lamp-top-cover {
+  position: absolute;
+  inset: auto;
+  z-index: 40;
+  height: 11rem;
+  width: 100%;
+  transform: translateY(-12.5rem);
+  background: rgba(17, 17, 19, 0.92);
+}
+
+.lamp-children {
+  position: relative;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  /* Push the heading down into the bright spot of the beam. The beam's
+     filament line sits ~7rem above section center; the glow extends ~9rem
+     below that, so children near +2rem from center land in the halo. */
+  margin-top: 2rem;
+}
+
+
+@media (max-width: 720px) {
+  .lamp-section { min-height: 360px; }
+  .lamp-cone { height: 10rem; width: 22rem; }
+  .lamp-glow { width: 20rem; }
+  .lamp-blob { height: 7rem; }
+  .lamp-line { width: 22rem; }
 }
 
 .particles {
@@ -229,7 +728,7 @@ button {
 
 .nav-link.active {
   color: var(--fg);
-  background: rgba(74, 222, 128, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-link.active svg {
@@ -255,12 +754,199 @@ button {
   transform: translateY(-1px);
 }
 
+/* ------------------- AnimatedNav (framer-motion pill nav) ------------------- */
+/* Centered pill at the top of the page; auto-collapses to a 3rem circle on
+   scroll-down and re-expands on scroll-up. framer-motion handles all the
+   spring/stagger physics — this CSS only owns layout, color, and the glass
+   look. */
+
+.anav-fixed {
+  position: fixed;
+  /* --banner-h is set by <StickyBanner> on :root while it's visible (44px),
+     otherwise unset (defaults to 0). Smoothly transitions when the banner
+     mounts/unmounts so the nav slides down + up with the banner. */
+  top: calc(24px + var(--banner-h, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  transition: top 0.3s ease;
+}
+
+.anav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(14, 17, 24, 0.7);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  color: var(--fg);
+}
+
+.anav-collapsed {
+  cursor: pointer;
+  justify-content: center;
+}
+
+.anav-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 8px;
+  color: var(--fg);
+}
+
+.anav-icon {
+  display: block;
+}
+
+.anav-items {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 16px;
+}
+@media (min-width: 640px) {
+  .anav-items { gap: 16px; }
+}
+
+.anav-items-locked {
+  pointer-events: none;
+}
+
+.anav-link-wrap {
+  display: inline-flex;
+}
+
+.anav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: color 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.anav-link:hover {
+  color: var(--fg);
+}
+
+.anav-link-active {
+  color: var(--fg);
+}
+
+.anav-collapsed-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--fg);
+}
+
+/* ------------------- StickyBanner ------------------- */
+/* Fixed top-of-page sale/announcement banner. Cyan gradient ties back to
+   the Lamp's beam + Top-Gradient button accent line. Dismisses with a
+   slide-up + fade (handled by framer-motion on the component). */
+
+.sticky-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 56px 10px 16px;
+  min-height: 44px;
+  background: linear-gradient(180deg, #06b6d4, #0891b2);
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.25);
+}
+
+.sticky-banner-text {
+  margin: 0;
+  max-width: 90%;
+  line-height: 1.4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-banner-text strong {
+  font-weight: 700;
+}
+
+.sticky-banner-link {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s;
+}
+
+.sticky-banner-link:hover {
+  opacity: 0.85;
+}
+
+.sticky-banner-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.sticky-banner-close:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 560px) {
+  .sticky-banner {
+    font-size: 12px;
+    padding: 8px 48px 8px 12px;
+  }
+}
+
 /* ------------------- Main + sections ------------------- */
 
 .main-content {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 64px 24px 96px;
+  /* Top padding tuned for the fixed AnimatedNav pill (48px tall + 24px top
+     offset = 72px). Extra breathing room so the hero text doesn't crowd
+     the nav. Adds --banner-h (44px) when StickyBanner is visible. */
+  padding-top: calc(112px + var(--banner-h, 0px));
+  padding-right: 24px;
+  padding-bottom: 96px;
+  padding-left: 24px;
+  transition: padding-top 0.3s ease;
+  /* Layer above BackgroundRippleEffect cells (z-index: 0) so text/buttons
+     receive clicks; the ripple cells remain clickable wherever main-content
+     has no visible/interactive content underneath. */
+  position: relative;
+  z-index: 1;
 }
 
 .tab-content {
@@ -268,6 +954,454 @@ button {
 }
 .tab-content.active {
   display: block;
+}
+
+/* ------------------- ScrollFloat (per-character scroll animation) ------------------- */
+
+.scroll-float {
+  margin: 112px auto;
+  overflow: hidden;
+  text-align: center;
+  max-width: var(--max-w);
+}
+
+.scroll-float-text {
+  display: inline-block;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--yellow-9);
+  letter-spacing: -0.02em;
+}
+
+.scroll-float-char {
+  display: inline-block;
+}
+
+/* ------------------- Vouched row ------------------- */
+/* "Vouched by Joshreyli" + DM screenshot side-by-side. The inner
+   .scroll-float overrides its own auto-margin so the two children sit on
+   the same horizontal line; on narrow screens they stack. */
+
+.vouched-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  max-width: var(--max-w);
+  margin: 112px auto;
+  padding: 0 24px;
+  flex-wrap: wrap;
+}
+
+.vouched-row .scroll-float {
+  margin: 0;
+}
+
+.vouched-proof-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.vouched-proof {
+  display: block;
+  width: 320px;
+  max-width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.vouched-proof:hover {
+  transform: translateY(-2px);
+  border-color: var(--green-9);
+  box-shadow: 0 16px 40px rgba(48, 164, 108, 0.25);
+}
+
+.vouched-proof img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Hover-card popup — appears above the thumbnail, 600px wide, scales in
+   with a spring. pointer-events: none means the cursor stays on the
+   trigger and the popup never blocks itself open. */
+.vouched-proof-popup {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  max-width: 90vw;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(48, 164, 108, 0.2);
+  z-index: 100;
+  pointer-events: none;
+  background: var(--bg-card);
+}
+
+.vouched-proof-popup img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .vouched-row { flex-direction: column; gap: 20px; }
+  .vouched-proof { width: 280px; }
+  .vouched-proof-popup { width: 90vw; }
+}
+
+/* ------------------- InteractiveHoverButton (Magic-UI-style) ------------------- */
+
+.ihb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  isolation: isolate;
+  /* Width hugs content but doesn't snap during hover transforms. */
+  min-width: 0;
+}
+
+/* Default state: a small white dot + the label, sitting at the left edge. */
+.ihb-row {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+}
+
+.ihb-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 50% 50%;
+}
+
+.ihb-label {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+}
+
+/* Hover overlay: duplicate label + arrow, sitting absolutely on top.
+   Starts off-screen to the right; slides in as the dot expands. */
+.ihb-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #04060a; /* dark text — sits on top of the white-filled bg */
+  opacity: 0;
+  transform: translateX(40px);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.ihb-arrow {
+  width: 16px;
+  height: 16px;
+}
+
+/* Hover state — the dot scales up enough to cover the button (the button has
+   overflow:hidden, so the rest of the scaled circle is clipped). The label
+   fades + slides right; the overlay slides in from right + fades in. */
+.ihb:hover .ihb-dot,
+.ihb:focus-visible .ihb-dot {
+  transform: scale(120);
+}
+
+.ihb:hover .ihb-label,
+.ihb:focus-visible .ihb-label {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.ihb:hover .ihb-overlay,
+.ihb:focus-visible .ihb-overlay {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ihb:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
+}
+
+/* ------------------- Scroll-reveal utility ------------------- */
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll,
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ------------------- Features section (core features grid) ------------------- */
+
+.features-section {
+  /* Slightly darker than the page background so the section feels like its
+     own "block" but doesn't introduce a hard #000 cut. The page already has
+     a radial-gradient overlay; this dims the area without competing. */
+  background:
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5) 12%, rgba(0, 0, 0, 0.5) 88%, transparent);
+  /* When the FeaturesHeader is hoisted into the Lamp above, the section
+     immediately starts with the grid — drop the heavy top padding/margin
+     that used to make room for an eyebrow + h2 + subtitle. */
+  padding: 32px 16px 112px;
+  margin: 0 -24px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.features-eyebrow {
+  background: #262626;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 0;
+  cursor: default;
+}
+
+.features-title {
+  color: #fff;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
+  margin-top: 24px;
+}
+
+.features-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  max-width: 32rem;
+  margin-top: 8px;
+}
+
+.features-grid {
+  width: 100%;
+  max-width: 72rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 40px;
+}
+@media (min-width: 768px) {
+  .features-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1024px) {
+  .features-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Each feature card sits inside a .feature-card-wrap that owns the
+   shared-layoutId spotlight. position:relative + z-index:1 on the card
+   keeps it above the spotlight. */
+.feature-card-wrap {
+  position: relative;
+  height: 100%;
+}
+
+.feature-hover-bg {
+  position: absolute;
+  inset: -6px;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 20px 50px -20px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.feature-card {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  background: #171717;
+  border: 1px solid #262626;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  /* Removed translateY hover — the shared-layoutId spotlight is the new
+     hover feedback. Keeping the lift would fight the spotlight visually. */
+  transition: border-color 0.2s ease;
+}
+.feature-card-wrap:hover .feature-card {
+  border-color: #404040;
+}
+
+.feature-trending {
+  background: #262626;
+  padding: 4px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-left: auto;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}
+
+.feature-image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-image {
+  width: 100%;
+  object-fit: contain;
+}
+.feature-image--narrow { max-width: 14rem; }
+.feature-image--wide   { max-width: 15rem; }
+
+/* Icon-variant feature card — abstract feature categories that don't have a
+   screenshot get a centered glyph instead. Sized to occupy the same vertical
+   real estate as the image variant so cards stay aligned in the grid. */
+.feature-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+/* Six-card variant: same three columns at lg, two at md, one mobile — but
+   sized so card image-wrap is shorter (less wasted vertical space when you
+   have icon-only tiles next to screenshot tiles). */
+.features-grid--six .feature-image-wrap {
+  min-height: 140px;
+}
+.features-grid--six .feature-image--narrow,
+.features-grid--six .feature-image--wide,
+.features-grid--six .feature-image {
+  max-height: 140px;
+  object-fit: contain;
+}
+
+/* OrbitalCluster — concentric rings + one big center + 5 small satellites.
+   Used by the third feature card in place of a flat <img>. Sizes assume a
+   ~240px tall stage; satellite positions are expressed as percentages of
+   that stage so the design scales reasonably across viewports. */
+.orbital {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+.orbital-rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.orbital-icon {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orbital-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.orbital-center {
+  width: 28%;
+  height: 28%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+.orbital-sat {
+  width: 17%;
+  height: 17%;
+}
+/* Five satellite positions, clockwise from the top:
+   ─ top (12 o'clock), top-right (~2 o'clock), bottom-right (~5 o'clock),
+     bottom-left (~7 o'clock), top-left (~10 o'clock). */
+.orbital-sat-0 { left: 50%; top:  8%; transform: translateX(-50%); }
+.orbital-sat-1 { right: 12%; top:  32%; }
+.orbital-sat-2 { right: 14%; bottom: 22%; }
+.orbital-sat-3 { left:  14%; bottom: 22%; }
+.orbital-sat-4 { left:  12%; top:    32%; }
+
+.feature-card-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 32px;
+  text-align: left;
+}
+
+.feature-card-desc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  margin-top: 8px;
+  max-width: 20rem;
+  margin-bottom: 16px;
+  text-align: left;
 }
 
 /* ------------------- Hero ------------------- */
@@ -284,8 +1418,8 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(74, 222, 128, 0.08);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
@@ -341,22 +1475,438 @@ button {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(74, 222, 128, 0.28);
+  box-shadow: 0 16px 40px rgba(255, 255, 255, 0.28);
 }
 
+/* Legacy bordered secondary — kept for any straggler usage. New code should
+   use .btn-top-gradient (the slate-pill-with-cyan-line style below). */
 .btn-secondary {
-  background: transparent;
-  border: 1px solid var(--border-strong);
-  color: var(--fg);
-  padding: 14px 26px;
-  border-radius: 10px;
-  font-size: 15px;
-  transition: background-color 0.15s, border-color 0.15s;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: #334155;
+  border: 1px solid #475569;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: box-shadow 0.2s, background-color 0.2s;
+  overflow: hidden;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  width: 50%;
+  margin-inline: auto;
+  background: linear-gradient(90deg, transparent, var(--yellow-9), transparent);
+  filter: drop-shadow(0 0 6px rgba(255, 230, 41, 0.6));
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #3f4e6d;
+  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.06);
+}
+
+/* ------------------- Button: Shimmer ------------------- */
+/* Dark base with a moving highlight band. Used for card-level CTAs where
+   we want presence without competing with the white hero button. */
+
+.btn-shimmer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background-image: linear-gradient(
+    110deg,
+    #000103 0%,
+    #000103 45%,
+    #1e2631 50%,
+    #000103 55%,
+    #000103 100%
+  );
+  background-size: 200% 100%;
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  animation: btn-shimmer 2.4s linear infinite;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.btn-shimmer:hover {
+  color: #fff;
+  border-color: #334155;
+}
+
+@keyframes btn-shimmer {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-shimmer { animation: none; }
+}
+
+/* ------------------- StatefulDownloadButton ------------------- */
+/* Three-state pill (idle / loading / success). Inherits the Top-Gradient
+   look (slate pill + cyan accent line) so it visually matches the static
+   .btn-secondary alongside it in the hero CTA group. */
+
+.stateful-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 170px;
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 999px;
+  background: #334155;
+  border: 1px solid #475569;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.stateful-btn::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  width: 50%;
+  margin-inline: auto;
+  background: linear-gradient(90deg, transparent, var(--yellow-9), transparent);
+  filter: drop-shadow(0 0 6px rgba(255, 230, 41, 0.6));
+}
+
+.stateful-btn:hover:not([disabled]) {
+  background: #3f4e6d;
+  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.06);
+}
+
+.stateful-btn[disabled] {
+  cursor: progress;
+  opacity: 0.95;
+}
+
+.stateful-btn-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.stateful-btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: stateful-spin 0.7s linear infinite;
+}
+
+@keyframes stateful-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stateful-btn-spinner { animation-duration: 1.5s; }
+}
+
+/* ------------------- Separator (Radix-Themes-style) ------------------- */
+/* Horizontal default; size sets width (or height for vertical) as % of
+   container. Color variants set a CSS custom property `--sep-color` that
+   the orientation rules below consume. For the green/cyan/etc. variants we
+   render the line as a left→right gradient that fades at the edges, so it
+   reads as a soft divider rather than a hard rule. */
+
+.sep {
+  border: 0;
+  flex-shrink: 0;
+  --sep-color: rgba(255, 255, 255, 0.12);
+}
+
+.sep-horizontal {
+  height: 1px;
+  background: var(--sep-color);
+  margin: 56px auto;
+}
+
+.sep-vertical {
+  width: 1px;
+  align-self: stretch;
+  background: var(--sep-color);
+  margin: 0 12px;
+}
+
+.sep-horizontal.sep-size-1 { width: 25%; }
+.sep-horizontal.sep-size-2 { width: 50%; }
+.sep-horizontal.sep-size-3 { width: 75%; }
+.sep-horizontal.sep-size-4 { width: 100%; max-width: var(--max-w); }
+
+.sep-vertical.sep-size-1 { height: 25%; }
+.sep-vertical.sep-size-2 { height: 50%; }
+.sep-vertical.sep-size-3 { height: 75%; }
+.sep-vertical.sep-size-4 { height: 100%; }
+
+/* Color variants: gray is the muted default; the tinted variants render
+   as a glowing left→center→right gradient (more visually interesting than
+   a flat colored line, and matches the rest of the page's gradient look). */
+.sep-gray { --sep-color: rgba(255, 255, 255, 0.12); }
+
+.sep-green.sep-horizontal {
+  /* Intentionally short + dim on the landing page — overrides the
+     .sep-size-N width and the bright glow of the other color variants.
+     Reads as a quiet hint of a divider, not a neon bar. */
+  width: 500px;
+  max-width: 70%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(80, 255, 120, 0.28),
+    transparent
+  );
+  filter: blur(0.5px);
+  box-shadow: none;
+  margin: 48px auto;
+}
+.sep-cyan.sep-horizontal {
+  background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+}
+.sep-orange.sep-horizontal {
+  background: linear-gradient(90deg, transparent, #f97316, transparent);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
+}
+.sep-crimson.sep-horizontal {
+  background: linear-gradient(90deg, transparent, #dc2626, transparent);
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+}
+.sep-indigo.sep-horizontal {
+  background: linear-gradient(90deg, transparent, #6366f1, transparent);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.sep-green.sep-vertical   { background: var(--green-9); }
+.sep-cyan.sep-vertical    { background: #06b6d4; }
+.sep-orange.sep-vertical  { background: #f97316; }
+.sep-crimson.sep-vertical { background: #dc2626; }
+.sep-indigo.sep-vertical  { background: #6366f1; }
+
+/* ------------------- HexGrid (community wall) ------------------- */
+/* Hexagonally-packed circular avatars sitting on the page's gray-1 base.
+   No section background — the dark page shows through, matching the
+   "keep the black background" requirement. */
+
+.hexgrid-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 16px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hexgrid-intro {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 48px;
+  padding: 0 16px;
+}
+
+.hexgrid-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  line-height: 1.1;
+  margin: 0 0 14px;
+}
+
+.hexgrid-subtitle {
+  color: var(--fg-muted);
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.hexgrid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  padding: 12px 16px 64px;
+}
+
+.hexgrid-row {
+  display: flex;
+  justify-content: center;
+}
+
+.hexgrid-item {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  isolation: isolate;
+}
+
+.hexgrid-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--bg-base);
+  background: var(--gray-3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.hexgrid-avatar:hover {
+  border-color: var(--green-9);
+  box-shadow: 0 8px 24px rgba(48, 164, 108, 0.35);
+}
+
+.hexgrid-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tooltip card that appears above the hovered avatar */
+.hexgrid-tooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  z-index: 100;
+  pointer-events: none;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
+}
+
+.hexgrid-tooltip-cover {
+  height: 80px;
+  position: relative;
+  background: var(--gray-3);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
+}
+
+.hexgrid-tooltip-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  display: block;
+}
+
+.hexgrid-tooltip-cover-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.hexgrid-tooltip-body {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  padding: 0 20px 20px;
+  position: relative;
+}
+
+.hexgrid-tooltip-avatar-row {
+  margin-top: -32px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.hexgrid-tooltip-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 4px solid var(--bg-card);
+  background: var(--gray-3);
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.hexgrid-tooltip-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--fg);
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.hexgrid-tooltip-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green-11);
+  margin: 0 0 14px;
+}
+
+.hexgrid-tooltip-quote {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  position: relative;
+  display: flex;
+  gap: 8px;
+}
+
+.hexgrid-tooltip-quote-icon {
+  color: var(--fg-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hexgrid-tooltip-quote p {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hexgrid-tooltip-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .hero-right {
@@ -369,12 +1919,14 @@ button {
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.12), rgba(6, 182, 212, 0.12));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(6, 182, 212, 0.12));
   border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
 
 .hero-video {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -384,8 +1936,9 @@ button {
 .hero-poster {
   position: absolute;
   inset: 0;
+  z-index: 0; /* sits BEHIND the <video>; only visible if the video fails to load */
   background:
-    radial-gradient(circle at 30% 30%, rgba(74, 222, 128, 0.25), transparent 60%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 60%),
     radial-gradient(circle at 70% 70%, rgba(6, 182, 212, 0.25), transparent 60%),
     #0a1014;
   display: flex;
@@ -395,6 +1948,214 @@ button {
   font-size: 13px;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+/* ------------------- Hero3DStage ------------------- */
+/* Centered hero text + perspective-rotated dashboard mockup underneath.
+   Replaces the side-by-side .hero layout on the home page. */
+
+.hero3d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero3d-text {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero3d-title {
+  font-size: clamp(44px, 7.5vw, 88px);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+
+.hero3d-subtitle {
+  font-size: clamp(15px, 1.4vw, 19px);
+  color: var(--fg-muted);
+  max-width: 620px;
+  margin: 0 auto 36px;
+  line-height: 1.55;
+}
+
+.hero3d-cta {
+  display: inline-flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero3d-stage {
+  width: 100%;
+  /* Gap between the hero CTA buttons and the dashboard mockup. The mockup
+     is tilted forward so its near edge visually rises toward the buttons,
+     making 56px feel cramped — the larger value gives proper breathing
+     room. */
+  margin-top: 128px;
+  /* Buffer before the Lamp section below — the perspective-rotated mockup
+     overflows its box visually, so it crowds whatever follows without
+     extra bottom margin. */
+  margin-bottom: 120px;
+  perspective: 2400px;
+  perspective-origin: 50% 0%;
+  padding: 0 24px;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .hero3d-stage { margin-top: 72px; }
+}
+
+.hero3d-mockup {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  transition: transform 0.2s linear;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow:
+    0 60px 120px -30px rgba(0, 0, 0, 0.7),
+    0 30px 60px -20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, #0a1014, #0f141a);
+}
+
+.hero3d-mockup-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero3d-glow {
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255, 255, 255, 0.18),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (max-width: 900px) {
+  .hero3d {
+    padding-top: 40px;
+  }
+  .hero3d-stage {
+    margin-top: 36px;
+  }
+  .hero3d-mockup {
+    /* Less aggressive tilt is enforced via JS, but cap the visible bleed. */
+    border-radius: 10px;
+  }
+}
+
+/* ------------------- CTASection (Discord-themed) ------------------- */
+/* Centered flex stack: eyebrow → title → subtitle → single pill button.
+   No card border — section blends with the page; relies on padding +
+   centered alignment for hierarchy. */
+
+.cta-banner {
+  margin: 120px auto 0;
+  max-width: var(--max-w);
+  padding: 0 24px;
+}
+
+.cta-banner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 80px 24px;
+}
+
+/* --primary is the Discord brand purple. Defined locally so we don't
+   need to touch the global tokens just for one section. */
+.cta-eyebrow {
+  --primary: #5865f2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.cta-eyebrow .cta-discord-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.cta-banner-title {
+  color: var(--fg);
+  font-size: clamp(32px, 4vw, 40px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cta-banner-sub {
+  color: var(--fg-muted);
+  font-size: 20px;
+  line-height: 1.55;
+  max-width: 640px;
+  margin: 0;
+}
+
+.cta-discord-btn {
+  --primary: #5865f2;
+  --primary-hover: #4752c4;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  transition: background-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 8px 24px -8px rgba(88, 101, 242, 0.6);
+}
+
+.cta-discord-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(88, 101, 242, 0.7);
+}
+
+.cta-discord-btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 600px) {
+  .cta-banner-inner {
+    padding: 56px 16px;
+  }
+  .cta-banner {
+    margin-top: 80px;
+  }
+  .cta-banner-sub {
+    font-size: 17px;
+  }
 }
 
 /* ------------------- Section header ------------------- */
@@ -441,6 +2202,13 @@ button {
 
 /* ------------------- Featured cards (Home tab) ------------------- */
 
+.featured-section {
+  margin-top: 64px;
+}
+.featured-section .featured-view-all {
+  margin-top: 56px;
+}
+
 .featured-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -461,7 +2229,7 @@ button {
 
 .featured-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(74, 222, 128, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
   background: var(--bg-card-hover);
 }
 
@@ -469,9 +2237,9 @@ button {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(74, 222, 128, 0.12);
+  background: rgba(255, 255, 255, 0.12);
   color: var(--accent);
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 11px;
@@ -485,7 +2253,7 @@ button {
   aspect-ratio: 16 / 10;
   border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(6, 182, 212, 0.1));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(6, 182, 212, 0.1));
   border: 1px solid var(--border-soft);
   margin-bottom: 20px;
 }
@@ -502,7 +2270,7 @@ button {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(74, 222, 128, 0.3), transparent 50%),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3), transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.3), transparent 50%);
 }
 
@@ -544,6 +2312,12 @@ button {
   font-size: 28px;
 }
 
+/* Lifetime Pro is the deal-of-the-page, so its price reads yellow instead of
+   the default white. Selector keys off the per-product class FeaturedCard adds. */
+.featured-card--lifetime .price-current {
+  color: var(--price-lifetime);
+}
+
 .price-sale-tag {
   background: rgba(249, 115, 22, 0.15);
   color: var(--price-sale);
@@ -571,24 +2345,41 @@ button {
   border-bottom: none;
 }
 
+/* Card CTA — same Shimmer visual as .btn-shimmer but width:100% and a
+   slightly tighter height so it sits flush at the bottom of every card. */
 .card-purchase-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
-  color: #04060a;
-  font-weight: 700;
+  height: 44px;
+  padding: 0 18px;
   border-radius: 10px;
+  border: 1px solid #1e293b;
+  background-image: linear-gradient(
+    110deg,
+    #000103 0%,
+    #000103 45%,
+    #1e2631 50%,
+    #000103 55%,
+    #000103 100%
+  );
+  background-size: 200% 100%;
+  color: #cbd5e1;
+  font-weight: 500;
   font-size: 14px;
-  transition: transform 0.15s, box-shadow 0.15s;
+  animation: btn-shimmer 2.4s linear infinite;
+  transition: color 0.2s, border-color 0.2s;
 }
 
 .card-purchase-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-cta);
+  color: #fff;
+  border-color: #334155;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-purchase-btn { animation: none; }
 }
 
 /* ------------------- Carousel ------------------- */
@@ -643,7 +2434,7 @@ button {
 }
 
 .carousel-btn:hover {
-  background: rgba(74, 222, 128, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .carousel-prev { left: 10px; }
@@ -679,22 +2470,39 @@ button {
   text-align: center;
 }
 
+/* Tertiary "View All" — Top-Gradient style: slate pill with a thin cyan
+   accent line that ties back to the Lamp's beam. */
 .btn-view-all {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 28px;
-  border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  color: var(--fg);
-  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: #334155;
+  border: 1px solid #475569;
+  color: #fff;
+  font-weight: 500;
   font-size: 14px;
-  transition: background-color 0.15s, border-color 0.15s, gap 0.15s;
+  overflow: hidden;
+  transition: background-color 0.2s, box-shadow 0.2s, gap 0.15s;
+}
+
+.btn-view-all::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  width: 50%;
+  margin-inline: auto;
+  background: linear-gradient(90deg, transparent, var(--yellow-9), transparent);
+  filter: drop-shadow(0 0 6px rgba(255, 230, 41, 0.6));
 }
 
 .btn-view-all:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: var(--accent);
+  background: #3f4e6d;
+  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.06);
   gap: 14px;
 }
 
@@ -729,6 +2537,9 @@ button {
   background: rgba(4, 6, 10, 0.6);
   border-top: 1px solid var(--border-soft);
   margin-top: 64px;
+  /* Stack above BackgroundRippleEffect cells. */
+  position: relative;
+  z-index: 1;
 }
 
 .footer-inner {

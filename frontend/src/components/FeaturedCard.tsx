@@ -1,5 +1,8 @@
+import { motion } from 'framer-motion';
 import type { Product } from '../data/products';
 import Carousel from './Carousel';
+import { useReveal } from '../hooks/useReveal';
+import { useDownloadModal } from './DownloadModalContext';
 
 function CartIcon() {
   return (
@@ -11,15 +14,54 @@ function CartIcon() {
   );
 }
 
+// FlyonUI-style intersect animation for the highlighted card:
+// scale+opacity+blur fade-in from bottom-right with smooth spring, and the
+// CTA button scales in with a 400ms delayed bouncier spring.
+const lifetimeCardVariants = {
+  hidden: { scale: 0, opacity: 0, filter: 'blur(5px)' },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring' as const,
+      damping: 18,
+      stiffness: 200,
+      when: 'beforeChildren' as const,
+    },
+  },
+};
+
+const lifetimeButtonVariants = {
+  hidden: { scale: 0 },
+  visible: {
+    scale: 1,
+    transition: { type: 'spring' as const, damping: 10, stiffness: 300, delay: 0.4 },
+  },
+};
+
 type Props = {
   product: Product;
 };
 
 export default function FeaturedCard({ product }: Props) {
   const usesCarousel = product.images.length > 1;
+  const ref = useReveal<HTMLElement>();
+  const isLifetime = product.id === 'lifetime';
+  const isFreeDownload = product.id === 'free';
+  const { openModal } = useDownloadModal();
 
-  return (
-    <article className="featured-card">
+  // Intercept the click for the free Starter product so it opens the
+  // shared confirmation modal instead of navigating to /download.
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (isFreeDownload) {
+      e.preventDefault();
+      openModal();
+    }
+  };
+
+  const inner = (
+    <>
       {product.badge && <span className="card-badge">{product.badge}</span>}
 
       {usesCarousel ? (
@@ -58,15 +100,53 @@ export default function FeaturedCard({ product }: Props) {
         ))}
       </ul>
 
-      <a
-        href={product.cta.href}
-        className="card-purchase-btn"
-        {...(product.cta.external
-          ? { target: '_blank', rel: 'noopener noreferrer' }
-          : {})}
+      {isLifetime ? (
+        <motion.a
+          href={product.cta.href}
+          className="card-purchase-btn"
+          variants={lifetimeButtonVariants}
+          {...(product.cta.external
+            ? { target: '_blank', rel: 'noopener noreferrer' }
+            : {})}
+        >
+          <CartIcon /> {product.cta.label}
+        </motion.a>
+      ) : (
+        <a
+          href={product.cta.href}
+          className="card-purchase-btn"
+          onClick={handleCtaClick}
+          {...(product.cta.external
+            ? { target: '_blank', rel: 'noopener noreferrer' }
+            : {})}
+        >
+          <CartIcon /> {product.cta.label}
+        </a>
+      )}
+    </>
+  );
+
+  if (isLifetime) {
+    return (
+      <motion.article
+        className={`featured-card featured-card--${product.id}`}
+        style={{ transformOrigin: 'bottom right' }}
+        variants={lifetimeCardVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.5 }}
       >
-        <CartIcon /> {product.cta.label}
-      </a>
+        {inner}
+      </motion.article>
+    );
+  }
+
+  return (
+    <article
+      ref={ref}
+      className={`featured-card featured-card--${product.id} reveal-on-scroll`}
+    >
+      {inner}
     </article>
   );
 }

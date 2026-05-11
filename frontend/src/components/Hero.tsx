@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { InteractiveHoverButton } from './InteractiveHoverButton';
 
-// Hero with a video placeholder. When the user uploads img/hero-bg.mp4 we'll
-// swap the <div className="hero-poster"> for an autoplay-muted-loop <video>.
-const HERO_VIDEO_SRC = '/static/images/hero-bg.mp4';
+// The video file lives at auranewweb/static/videos/hero-bg.mp4 and is served
+// by the existing http.FileServer mounted at /static/. If the video fails to
+// load (404, codec issue, autoplay blocked) the <video> element hides itself
+// via onError and the gradient poster underneath shows through.
+const HERO_VIDEO_SRC = '/static/videos/hero-bg.mp4';
 
 export default function Hero() {
   return (
@@ -22,9 +24,7 @@ export default function Hero() {
           measurable competitive advantage in gaming performance.
         </p>
         <div className="hero-cta-group animate-hero" style={{ animationDelay: '0.8s' }}>
-          <Link to="/products" className="btn-primary">
-            View Products
-          </Link>
+          <InteractiveHoverButton to="/products">View Products</InteractiveHoverButton>
           <a
             href="https://discord.com/invite/4TBUw4nBFd"
             className="btn-secondary"

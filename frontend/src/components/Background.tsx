@@ -17,7 +17,6 @@ export default function Background() {
     <>
       <div className="bg-image" aria-hidden />
       <div className="bg-overlay" aria-hidden />
-      <div className="grid-pattern" aria-hidden />
       <div className="particles" aria-hidden>
         {PARTICLES.map((p, i) => (
           <span
