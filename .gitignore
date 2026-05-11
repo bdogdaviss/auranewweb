@@ -26,3 +26,10 @@ coverage.txt
 
 # Claude Code per-machine settings (team-shared settings.json may still be tracked)
 .claude/settings.local.json
+
+# SQLite runtime files (license keys + processed webhook events)
+data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal

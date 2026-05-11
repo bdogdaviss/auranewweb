@@ -17,8 +17,19 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
+	accounthandler "aura-optimizer/api/handlers/account"
 	stripehandler "aura-optimizer/api/handlers/payment"
+	"aura-optimizer/internal/db"
+	"aura-optimizer/internal/mailer"
 	paysvc "aura-optimizer/internal/payment"
+	"aura-optimizer/internal/repo"
+)
+
+// Persistence + email layer. Initialised in main() before route registration.
+var (
+	licenseRepo repo.LicenseRepository
+	eventStore  repo.EventStore
+	appMailer   mailer.Mailer
 )
 
 // PayPal configuration - set these as environment variables.
@@ -215,6 +226,38 @@ func main() {
 		log.Fatal("Failed to parse templates:", err)
 	}
 
+	// Durable storage for licenses + processed webhook events. Required (the
+	// payment provider routes still register independently; if the DB fails to
+	// open, license issuance + the resend endpoint will be unavailable but the
+	// rest of the site keeps working).
+	sqlDB, err := db.Open(getEnv("SQLITE_PATH", "./data/auranewweb.sqlite"))
+	if err != nil {
+		log.Fatalf("open sqlite: %v", err)
+	}
+	defer sqlDB.Close()
+	licenseRepo = repo.NewLicenseRepository(sqlDB)
+	eventStore = repo.NewEventStore(sqlDB)
+	log.Printf("✅ SQLite ready at %s", getEnv("SQLITE_PATH", "./data/auranewweb.sqlite"))
+
+	// Email provider. Resend in prod; no-op (logs only) when not configured so
+	// local dev doesn't require a Resend account.
+	if resendKey, resendFrom := getEnv("RESEND_API_KEY", ""), getEnv("RESEND_FROM", ""); resendKey != "" && resendFrom != "" {
+		rm, mailerErr := mailer.NewResendMailer(
+			resendKey,
+			resendFrom,
+			getEnv("SUPPORT_EMAIL", ""),       // shown in "Need help?" line; defaults to From address
+			getEnv("AURA_DOWNLOAD_URL", ""),   // the "Download Aura Optimizer" button target
+		)
+		if mailerErr != nil {
+			log.Fatalf("resend mailer init: %v", mailerErr)
+		}
+		appMailer = rm
+		log.Printf("✅ Email enabled via Resend (from %s)", resendFrom)
+	} else {
+		appMailer = mailer.NoopMailer{}
+		log.Printf("⚠️  RESEND_API_KEY / RESEND_FROM not set – emails disabled (noop mailer)")
+	}
+
 	// Static files - serves CSS, JS, and images
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
@@ -270,11 +313,30 @@ func main() {
 				}
 				mu.Unlock()
 			},
+			LicenseRepo: licenseRepo,
+			EventStore:  eventStore,
+			Mailer:      appMailer,
 		})
 		http.HandleFunc("/api/stripe/create-payment-intent", h.CreatePaymentIntent)
 		http.HandleFunc("/api/stripe/webhook", h.Webhook)
 		log.Printf("✅ Stripe routes enabled")
 	}
+
+	// Resend-license endpoint: lets an authenticated user re-email themselves
+	// their existing license key. Always registered; the handler degrades
+	// gracefully if licenseRepo / appMailer aren't available.
+	resendHandler := accounthandler.NewResendLicenseHandler(accounthandler.ResendLicenseDeps{
+		GetUserEmail: func(r *http.Request) string {
+			u := getUser(r)
+			if u == nil {
+				return ""
+			}
+			return u.Email
+		},
+		LicenseRepo: licenseRepo,
+		Mailer:      appMailer,
+	})
+	http.Handle("/api/account/resend-license", resendHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -358,9 +420,30 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		mu.Unlock()
 	}
 
+	// Strict gate: only emit the download URL to clients with a logged-in user
+	// and a non-revoked license in SQLite. IsPro (in-memory) is left as a
+	// faster UI hint for other surfaces but is not authoritative here.
+	var (
+		hasLicense  bool
+		downloadURL string
+		licenseKey  string
+	)
+	if user != nil && licenseRepo != nil {
+		lic, err := licenseRepo.FindLatestByEmail(r.Context(), user.Email)
+		if err != nil {
+			log.Printf("download license lookup for %s: %v", user.Email, err)
+		} else if lic != nil {
+			hasLicense = true
+			downloadURL = os.Getenv("AURA_DOWNLOAD_URL")
+			licenseKey = lic.Key
+		}
+	}
+
 	_ = templates.ExecuteTemplate(w, "download.html", map[string]interface{}{
 		"User":        user,
-		"DownloadURL": os.Getenv("AURA_DOWNLOAD_URL"),
+		"DownloadURL": downloadURL, // empty unless the user holds a valid license
+		"HasLicense":  hasLicense,
+		"LicenseKey":  licenseKey,
 	})
 }
 

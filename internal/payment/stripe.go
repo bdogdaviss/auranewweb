@@ -68,6 +68,12 @@ func (s *StripeService) CreatePaymentIntent(in CreateIntentInput) (*CreateIntent
 	if in.UserID != "" {
 		params.AddMetadata("user_id", in.UserID)
 	}
+	// user_email is stamped here too so the webhook handler can issue the
+	// license to a stable identity even if the in-memory user store was wiped
+	// by a restart between purchase and webhook delivery.
+	if in.UserEmail != "" {
+		params.AddMetadata("user_email", in.UserEmail)
+	}
 
 	pi, err := paymentintent.New(params)
 	if err != nil {
