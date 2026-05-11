@@ -86,9 +86,14 @@ func TestResendLicense_NoLicense(t *testing.T) {
 
 func TestResendLicense_SendsLicense(t *testing.T) {
 	deps, licRepo, mr := newDeps(t, "u@example.com")
-	// Seed a license.
-	if _, _, err := licRepo.InsertIfNew(context.Background(), "u@example.com", "lifetime", "pi_x"); err != nil {
-		t.Fatalf("seed license: %v", err)
+	// Seed: put a key in the pool, assign it to the user — same path the real
+	// webhook handler takes when a purchase succeeds.
+	if added, _, err := licRepo.AddAvailable(context.Background(), "lifetime",
+		[]string{"AURA-AAAAA-BBBBB-CCCCC"}); err != nil || added != 1 {
+		t.Fatalf("seed pool: added=%d err=%v", added, err)
+	}
+	if _, _, err := licRepo.AssignFromPool(context.Background(), "u@example.com", "lifetime", "pi_x"); err != nil {
+		t.Fatalf("assign: %v", err)
 	}
 	h := NewResendLicenseHandler(deps)
 	rec := post(t, h)
@@ -113,8 +118,12 @@ func TestResendLicense_IgnoresAttackerSuppliedUserID(t *testing.T) {
 	// reads the session cookie server-side) is the only source of identity.
 	deps, licRepo, mr := newDeps(t, "victim@example.com")
 	// Seed a license for the victim — attacker has no way to read it via this endpoint.
-	if _, _, err := licRepo.InsertIfNew(context.Background(), "victim@example.com", "lifetime", "pi_v"); err != nil {
-		t.Fatalf("seed: %v", err)
+	if added, _, err := licRepo.AddAvailable(context.Background(), "lifetime",
+		[]string{"AURA-VVVVV-IIIII-CCCCC"}); err != nil || added != 1 {
+		t.Fatalf("seed pool: added=%d err=%v", added, err)
+	}
+	if _, _, err := licRepo.AssignFromPool(context.Background(), "victim@example.com", "lifetime", "pi_v"); err != nil {
+		t.Fatalf("seed assignment: %v", err)
 	}
 	h := NewResendLicenseHandler(deps)
 

@@ -176,6 +176,12 @@ func TestWebhook_FullFlow_InsertsLicenseAndEmails(t *testing.T) {
 	eventStore := repo.NewEventStore(sqlDB)
 	mr := &recordingMailer{}
 
+	// Seed the pool with one key so the assignment can succeed.
+	if added, _, err := licRepo.AddAvailable(context.Background(), "lifetime",
+		[]string{"AURA-TEST1-TEST1-TEST1"}); err != nil || added != 1 {
+		t.Fatalf("seed pool: added=%d err=%v", added, err)
+	}
+
 	h := NewStripeHandler(Deps{
 		Service:     svc,
 		EventStore:  eventStore,
@@ -201,26 +207,79 @@ func TestWebhook_FullFlow_InsertsLicenseAndEmails(t *testing.T) {
 		t.Fatalf("first delivery: status %d, want 200", code)
 	}
 
-	// Verify license was persisted.
+	// Verify the pool-issued key landed in license_keys with the right fields.
 	lic, err := licRepo.FindActive(context.Background(), "buyer@example.com", "lifetime")
 	if err != nil || lic == nil {
-		t.Fatalf("expected license to be inserted; lic=%+v err=%v", lic, err)
+		t.Fatalf("expected license to be issued; lic=%+v err=%v", lic, err)
+	}
+	if lic.Key != "AURA-TEST1-TEST1-TEST1" {
+		t.Errorf("issued key = %q, want AURA-TEST1-TEST1-TEST1 (pool FIFO)", lic.Key)
 	}
 	if lic.StripePaymentIntentID != "pi_full_flow" {
 		t.Errorf("payment intent id not recorded: %q", lic.StripePaymentIntentID)
 	}
 
-	// Verify email was sent once.
+	// Pool count must drop to 0 (the sold key was deleted from available_keys).
+	if n, _ := licRepo.CountAvailable(context.Background(), "lifetime"); n != 0 {
+		t.Errorf("pool count after sale = %d, want 0", n)
+	}
+
 	if got := mr.count(); got != 1 {
 		t.Errorf("mailer calls after first delivery = %d, want 1", got)
 	}
 
-	// Resend: same event ID. EventStore should dedup before any license/email work.
+	// Resend the same event: event-store dedup short-circuits, no new license,
+	// no second email, pool still at 0.
 	if code := deliver(); code != http.StatusOK {
 		t.Fatalf("second delivery: status %d, want 200", code)
 	}
 	if got := mr.count(); got != 1 {
 		t.Errorf("mailer calls after duplicate delivery = %d, want 1 (event-store dedup failed)", got)
+	}
+}
+
+func TestWebhook_PoolEmpty_Returns5xx(t *testing.T) {
+	const whSecret = "whsec_pool_empty"
+	svc := newStripeServiceForTest(t, whSecret)
+
+	sqlDB, err := db.Open(filepath.Join(t.TempDir(), "test.sqlite"))
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	t.Cleanup(func() { _ = sqlDB.Close() })
+
+	licRepo := repo.NewLicenseRepository(sqlDB)
+	eventStore := repo.NewEventStore(sqlDB)
+	mr := &recordingMailer{}
+
+	// Note: NO seedPool — pool is empty for "lifetime".
+
+	h := NewStripeHandler(Deps{
+		Service:     svc,
+		EventStore:  eventStore,
+		LicenseRepo: licRepo,
+		Mailer:      mr,
+	})
+
+	payload := []byte(`{"id":"evt_empty_pool","api_version":"2024-04-10","type":"payment_intent.succeeded","data":{"object":{"id":"pi_empty","metadata":{"user_email":"buyer@example.com","product_id":"lifetime"}}}}`)
+	signed := webhook.GenerateTestSignedPayload(&webhook.UnsignedPayload{
+		Payload: payload,
+		Secret:  whSecret,
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/api/stripe/webhook", bytes.NewReader(signed.Payload))
+	req.Header.Set("Stripe-Signature", signed.Header)
+	rec := httptest.NewRecorder()
+	h.Webhook(rec, req)
+
+	// Empty pool MUST result in a 5xx so Stripe retries (giving an admin
+	// time to refill). Returning 200 would tell Stripe the payment is
+	// handled and lose the retry.
+	if rec.Code < 500 || rec.Code >= 600 {
+		t.Errorf("empty-pool status = %d, want 5xx so Stripe retries", rec.Code)
+	}
+	if got := mr.count(); got != 0 {
+		t.Errorf("mailer should not be called when pool is empty, got %d calls", got)
 	}
 }
 

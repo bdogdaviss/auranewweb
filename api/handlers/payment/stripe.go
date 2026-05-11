@@ -2,6 +2,7 @@ package payment
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"math"
@@ -9,8 +10,8 @@ import (
 
 	"github.com/stripe/stripe-go/v78"
 
-	paysvc "aura-optimizer/internal/payment"
 	"aura-optimizer/internal/mailer"
+	paysvc "aura-optimizer/internal/payment"
 	"aura-optimizer/internal/repo"
 )
 
@@ -156,16 +157,26 @@ func (h *StripeHandler) Webhook(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if h.deps.LicenseRepo != nil {
-			license, wasNew, err := h.deps.LicenseRepo.InsertIfNew(ctx, userEmail, productID, pi.ID)
+			license, wasNew, err := h.deps.LicenseRepo.AssignFromPool(ctx, userEmail, productID, pi.ID)
+			if errors.Is(err, repo.ErrPoolEmpty) {
+				// Out of inventory. Return 5xx so Stripe retries — by the
+				// time it retries, an admin should have run the import-keys
+				// CLI to refill the pool and the retry will succeed. The
+				// customer paid and is waiting; this needs a monitoring
+				// alert in any non-trivial deployment.
+				log.Printf("stripe webhook: POOL EMPTY for product=%s (event=%s pi=%s buyer=%s) — Stripe will retry; REFILL THE POOL", productID, event.ID, pi.ID, userEmail)
+				writeJSONError(w, http.StatusServiceUnavailable, "license inventory empty")
+				return
+			}
 			if err != nil {
-				log.Printf("stripe webhook: insert license (event=%s): %v", event.ID, err)
-				writeJSONError(w, http.StatusInternalServerError, "license persistence failed")
+				log.Printf("stripe webhook: assign from pool (event=%s): %v", event.ID, err)
+				writeJSONError(w, http.StatusInternalServerError, "license assignment failed")
 				return
 			}
 			if wasNew {
 				log.Printf("stripe webhook: new license %s for %s/%s (event=%s)", license.Key, userEmail, productID, event.ID)
 			} else {
-				log.Printf("stripe webhook: reusing existing license for %s/%s on retry (event=%s)", userEmail, productID, event.ID)
+				log.Printf("stripe webhook: reusing existing license %s for %s/%s on retry (event=%s)", license.Key, userEmail, productID, event.ID)
 			}
 
 			// Always attempt the email; processed_events at the top is what
