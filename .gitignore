@@ -33,3 +33,11 @@ data/
 *.sqlite-journal
 *.sqlite-shm
 *.sqlite-wal
+
+# Node / Vite frontend
+# - node_modules excluded (size). dist/ stays tracked because go:embed pulls
+#   it into the Go binary at compile time — fresh clones can run `make run`
+#   without needing Node installed.
+frontend/node_modules/
+frontend/.vite/
+frontend/*.log

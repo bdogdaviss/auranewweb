@@ -3,13 +3,16 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -24,6 +27,13 @@ import (
 	paysvc "aura-optimizer/internal/payment"
 	"aura-optimizer/internal/repo"
 )
+
+// frontendDist is the built React app (Vite output). Embedded at compile time
+// so a single Go binary deploys both backend and frontend. Run `npm run build`
+// inside frontend/ before `go build`.
+//
+//go:embed all:frontend/dist
+var frontendDist embed.FS
 
 // Persistence + email layer. Initialised in main() before route registration.
 var (
@@ -262,15 +272,16 @@ func main() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Routes
-	http.HandleFunc("/", homeHandler)
+	// Routes — functional pages stay as Go templates (they depend on session
+	// state, Stripe Elements, and the license-gated download flow).
 	http.HandleFunc("/login", loginPageHandler)
 	http.HandleFunc("/register", registerPageHandler)
 	http.HandleFunc("/logout", logoutHandler)
-	http.HandleFunc("/pricing", pricingHandler)
 	http.HandleFunc("/download", downloadHandler)
-	http.HandleFunc("/about", aboutHandler)
-	http.HandleFunc("/features", featuresHandler)
+	// Marketing pages (/, /products, /pricing, /about, /features) are served by
+	// the React SPA via the catch-all "/" handler registered after the API
+	// routes below. Go's mux gives longest-prefix priority, so the specific
+	// /login, /api/*, /static/* handlers still win.
 
 	// API
 	http.HandleFunc("/api/auth/login", apiLogin)
@@ -337,6 +348,10 @@ func main() {
 		Mailer:      appMailer,
 	})
 	http.Handle("/api/account/resend-license", resendHandler)
+
+	// SPA catch-all. Must be registered last (it's the "/" handler).
+	// Specific /login, /checkout, /api/*, /static/* still take priority.
+	http.HandleFunc("/", serveSPA)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -885,4 +900,46 @@ func lookupProductForStripe(productID string) (stripehandler.Product, bool) {
 		}
 	}
 	return stripehandler.Product{}, false
+}
+
+// serveSPA serves the React app embedded under frontend/dist. For any path
+// that exists as a static file in dist (e.g. /assets/index-xxx.js), it streams
+// the file. For anything else that isn't an /api/ route, it falls back to
+// index.html so React Router can handle client-side routing. /api/* requests
+// that didn't match an earlier specific handler get a real 404.
+func serveSPA(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, "/api/") {
+		http.NotFound(w, r)
+		return
+	}
+
+	distFS, err := fs.Sub(frontendDist, "frontend/dist")
+	if err != nil {
+		http.Error(w, "frontend not built", http.StatusInternalServerError)
+		return
+	}
+
+	// Try the requested path as a static asset first.
+	requested := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+	if requested != "" && requested != "." {
+		if f, err := distFS.Open(requested); err == nil {
+			info, _ := f.Stat()
+			_ = f.Close()
+			if info != nil && !info.IsDir() {
+				http.FileServer(http.FS(distFS)).ServeHTTP(w, r)
+				return
+			}
+		}
+	}
+
+	// SPA fallback: send index.html so React Router renders the route.
+	idx, err := distFS.Open("index.html")
+	if err != nil {
+		http.Error(w, "index.html missing from frontend/dist (did you run `npm run build`?)", http.StatusInternalServerError)
+		return
+	}
+	defer idx.Close()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	_, _ = io.Copy(w, idx)
 }
