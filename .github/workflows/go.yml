@@ -38,4 +38,11 @@ jobs:
           # Parse-only: render to a throwaway path; non-zero exit = syntax error.
           awk '/^```mermaid$/{flag=1;next} /^```$/{flag=0} flag' README.md > /tmp/diagram.mmd
           test -s /tmp/diagram.mmd || { echo "::error::No mermaid block found in README.md"; exit 1; }
-          npx -y --package=@mermaid-js/mermaid-cli mmdc -i /tmp/diagram.mmd -o /tmp/diagram.svg -b transparent
+          # mmdc uses Puppeteer/Chromium which needs --no-sandbox on the GitHub
+          # Actions ubuntu-24.04 runner (user namespaces are restricted by AppArmor).
+          echo '{"args":["--no-sandbox"]}' > /tmp/puppeteer-config.json
+          npx -y --package=@mermaid-js/mermaid-cli mmdc \
+            -i /tmp/diagram.mmd \
+            -o /tmp/diagram.svg \
+            -b transparent \
+            --puppeteerConfigFile /tmp/puppeteer-config.json
