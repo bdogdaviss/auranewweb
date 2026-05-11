@@ -13,7 +13,9 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          # 1.25 required because modernc.org/sqlite v1.50+ has `go 1.25.0`
+          # in its go.mod and we depend on it for license_keys persistence.
+          go-version: '1.25'
           cache: true
 
       - name: go vet
@@ -26,6 +28,10 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
+          # Build golangci-lint from source with the CI's Go (1.25) instead of
+          # downloading the pre-built binary (which is built with 1.24 and
+          # refuses to load a go.mod targeting 1.25). Adds ~20s to the job.
+          install-mode: goinstall
 
       - name: go mod tidy drift
         run: |
@@ -38,4 +44,11 @@ jobs:
           # Parse-only: render to a throwaway path; non-zero exit = syntax error.
           awk '/^```mermaid$/{flag=1;next} /^```$/{flag=0} flag' README.md > /tmp/diagram.mmd
           test -s /tmp/diagram.mmd || { echo "::error::No mermaid block found in README.md"; exit 1; }
-          npx -y --package=@mermaid-js/mermaid-cli mmdc -i /tmp/diagram.mmd -o /tmp/diagram.svg -b transparent
+          # mmdc uses Puppeteer/Chromium which needs --no-sandbox on the GitHub
+          # Actions ubuntu-24.04 runner (user namespaces are restricted by AppArmor).
+          echo '{"args":["--no-sandbox"]}' > /tmp/puppeteer-config.json
+          npx -y --package=@mermaid-js/mermaid-cli mmdc \
+            -i /tmp/diagram.mmd \
+            -o /tmp/diagram.svg \
+            -b transparent \
+            --puppeteerConfigFile /tmp/puppeteer-config.json
