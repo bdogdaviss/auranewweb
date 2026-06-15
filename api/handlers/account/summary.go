@@ -54,7 +54,10 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	referralCount := 0
 	totalEarned := int64(0)
-	var referrals []map[string]any
+	// Initialize as a non-nil empty slice: a nil slice marshals to JSON `null`,
+	// and the frontend does `data.referrals.length` (AccountPage.tsx), which
+	// throws on null and blanks the whole page for users with zero referrals.
+	referrals := make([]map[string]any, 0)
 	if h.deps.ReferralRepo != nil {
 		if n, err := h.deps.ReferralRepo.CountByReferrer(r.Context(), user.ID); err == nil {
 			referralCount = n

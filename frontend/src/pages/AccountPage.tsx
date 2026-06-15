@@ -352,8 +352,8 @@ export default function AccountPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.referrals.length > 0 ? (
-                    data.referrals.map((r, idx) => (
+                  {(data.referrals ?? []).length > 0 ? (
+                    (data.referrals ?? []).map((r, idx) => (
                       <tr key={idx} className="border-b border-white/5">
                         <td className="py-3 text-gray-300">{r.date}</td>
                         <td className="py-3 text-gray-300">{r.product}</td>
