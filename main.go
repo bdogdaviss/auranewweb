@@ -306,9 +306,8 @@ func main() {
 	http.HandleFunc("/register", registerPageHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/download", downloadHandler)
-	// /account is now served by the React SPA (client-side AccountPage) for consistency.
-	// The old template handler is disabled; data comes from /api/account/summary.
-	// http.HandleFunc("/account", accountPageHandler)
+	// /account is served by the React SPA (client-side AccountPage); data comes
+	// from /api/account/summary. There is no server-rendered /account route.
 	http.HandleFunc("/recover", recoverPageHandler)
 	http.HandleFunc("/success", successPageHandler)
 	// Marketing pages (/, /products, /pricing, /about, /features) are served by
@@ -524,65 +523,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		"HasLicense":  hasLicense,
 		"LicenseKey":  licenseKey,
 	})
-}
-
-// accountPageHandler renders the affiliate dashboard: the logged-in user's
-// share link and store-credit balance. Session-gated like downloadHandler.
-func accountPageHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUser(r)
-	if user == nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	data := map[string]interface{}{
-		"User":               user,
-		"ReferralCode":       "",
-		"ReferralLink":       "",
-		"CreditDisplay":      "$0.00",
-		"TotalEarnedDisplay": "$0.00",
-		"ReferralCount":      0,
-		"CommissionDisplay":  dollars(int64(stripehandler.ReferralCreditCents)),
-		"Referrals":          []map[string]string{},
-	}
-
-	if userRepo != nil {
-		u, err := userRepo.EnsureUser(r.Context(), user.ID, user.Email, user.Name)
-		if err != nil {
-			log.Printf("account page: ensure user %s: %v", user.Email, err)
-		} else if u != nil {
-			data["ReferralCode"] = u.ReferralCode
-			data["ReferralLink"] = buildReferralLink(r, u.ReferralCode)
-			data["CreditDisplay"] = dollars(u.StoreCreditCents)
-			if referralRepo != nil {
-				if n, err := referralRepo.CountByReferrer(r.Context(), u.ID); err == nil {
-					data["ReferralCount"] = n
-				}
-				if t, err := referralRepo.TotalEarnedCents(r.Context(), u.ID); err == nil {
-					data["TotalEarnedDisplay"] = dollars(t)
-				}
-				if evts, err := referralRepo.ListByReferrer(r.Context(), u.ID, 50); err == nil {
-					rows := make([]map[string]string, 0, len(evts))
-					for _, e := range evts {
-						rows = append(rows, map[string]string{
-							"Date":       e.CreatedAt.Format("Jan 2, 2006"),
-							"Product":    e.ProductID,
-							"Commission": dollars(e.CreditCents),
-							"Status":     "Credited",
-						})
-					}
-					data["Referrals"] = rows
-				}
-			}
-		}
-	}
-
-	_ = templates.ExecuteTemplate(w, "account.html", data)
-}
-
-// dollars formats cents as a $X.XX string.
-func dollars(cents int64) string {
-	return fmt.Sprintf("$%d.%02d", cents/100, cents%100)
 }
 
 // recoverPageHandler renders the public "resend my license" page for guest
