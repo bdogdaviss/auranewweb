@@ -53,7 +53,7 @@ func TestCreatePaymentIntent_BadJSON(t *testing.T) {
 func TestCreatePaymentIntent_UnknownProduct(t *testing.T) {
 	h := newTestHandler()
 	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/api/stripe/create-payment-intent", strings.NewReader(`{"product_id":"nope"}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/stripe/create-payment-intent", strings.NewReader(`{"product_id":"nope","guest_email":"test@example.com","guest_email_confirm":"test@example.com"}`))
 	h.CreatePaymentIntent(rec, req)
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("status = %d, want 400", rec.Code)
@@ -103,6 +103,10 @@ func (m *recordingMailer) SendLicense(_ context.Context, to, key, productID stri
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.calls = append(m.calls, mailerCall{to, key, productID})
+	return nil
+}
+
+func (m *recordingMailer) SendReferralEarned(_ context.Context, _, _, _, _ string) error {
 	return nil
 }
 

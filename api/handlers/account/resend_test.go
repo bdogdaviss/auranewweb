@@ -26,6 +26,10 @@ func (m *recordingMailer) SendLicense(_ context.Context, to, _, _ string) error 
 	return nil
 }
 
+func (m *recordingMailer) SendReferralEarned(_ context.Context, _, _, _, _ string) error {
+	return nil
+}
+
 func newDeps(t *testing.T, email string) (ResendLicenseDeps, repo.LicenseRepository, *recordingMailer) {
 	t.Helper()
 	sqlDB, err := db.Open(filepath.Join(t.TempDir(), "t.sqlite"))

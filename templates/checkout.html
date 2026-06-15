@@ -160,6 +160,30 @@
                     <div id="panel-stripe" class="glass rounded-2xl p-6 mb-6" {{if .PayPalClientID}}style="display:none;"{{end}}>
                         <h3 class="text-sm font-medium text-gray-400 mb-4">Pay with Card</h3>
                         <form id="stripe-form" class="space-y-4">
+                            <div>
+                                <label for="stripe-email" class="block text-xs text-gray-400 mb-1">Email {{if not .User}}(where we send your license){{end}}</label>
+                                <input type="email" id="stripe-email" name="email" required
+                                    autocomplete="email"
+                                    value="{{if .User}}{{.User.Email}}{{end}}"{{if .User}} readonly{{end}}
+                                    placeholder="you@example.com"
+                                    class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500/50" />
+                            </div>
+                            {{if not .User}}
+                            <div>
+                                <label for="stripe-email-confirm" class="block text-xs text-gray-400 mb-1">Confirm email</label>
+                                <input type="email" id="stripe-email-confirm" name="email_confirm" required
+                                    autocomplete="off"
+                                    placeholder="you@example.com"
+                                    class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500/50" />
+                            </div>
+                            <p class="text-[10px] text-gray-500">We will only send your license key to this address. Make sure it is correct and real.</p>
+                            {{end}}
+                            {{if and .User (gt .StoreCreditCents 0) (not .AlreadyOwns)}}
+                            <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none">
+                                <input type="checkbox" id="apply-credit" class="accent-aura-500 w-4 h-4" />
+                                <span>Apply my <span class="text-emerald-400 font-semibold">{{.StoreCreditDisplay}}</span> store credit</span>
+                            </label>
+                            {{end}}
                             <div id="stripe-card-element"></div>
                             <div id="stripe-card-errors" class="text-xs text-red-400 min-h-[1rem]" role="alert"></div>
                             <button type="submit" id="stripe-submit"
@@ -184,6 +208,24 @@
                     <div class="flex items-center gap-3 text-xs text-gray-500 mt-4">
                         <i data-lucide="shield-check" class="w-4 h-4 text-aura-600"></i>
                         <span>Payments are secured by PayPal and Stripe. Your card details never touch our servers.</span>
+                    </div>
+
+                    <!-- Guest license recovery -->
+                    <div class="text-xs text-gray-500 mt-3">
+                        Already purchased? <a href="/recover" class="text-emerald-400 hover:text-emerald-300">Resend your license</a>.
+                    </div>
+
+                    <!-- Upsell: earn it back via the affiliate program -->
+                    <div id="upsell-affiliate" class="relative flex items-center gap-4 rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 to-white/[0.02] p-4 mt-5">
+                        <div class="shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white text-sm">Earn it back</h3>
+                            <p class="text-xs text-gray-400">Refer friends and get <span class="text-emerald-400 font-semibold">$5.99</span> store credit per Pro sale.</p>
+                        </div>
+                        <a href="/account" class="bg-aura-500 hover:bg-aura-600 text-white text-xs font-semibold px-3 py-2 rounded-lg whitespace-nowrap">Get your link</a>
+                        <button onclick="document.getElementById('upsell-affiliate').remove()" aria-label="Dismiss the affiliate offer" class="absolute top-2 right-2 text-gray-500 hover:text-white text-sm">✕</button>
                     </div>
                 </div>
             </div>
@@ -285,7 +327,7 @@
                         const orderData = await response.json();
                         if (orderData.success) {
                             showMessage("Payment successful! Redirecting...", false);
-                            setTimeout(function() { window.location.href = "/download"; }, 1500);
+                            setTimeout(function() { window.location.href = "/success?ref=" + encodeURIComponent(data.orderID || "") + "&product=" + encodeURIComponent(productID); }, 1500);
                         } else {
                             throw new Error(orderData.error || "Payment could not be captured.");
                         }
@@ -347,6 +389,25 @@
             const submitText = document.getElementById("stripe-submit-text");
             const submitSpinner = document.getElementById("stripe-submit-spinner");
 
+            // Store-credit toggle. The discount shown here mirrors the server's
+            // rule (cap at price, leave at least Stripe's 50¢ minimum); the server
+            // recomputes it authoritatively, so this is display-only.
+            const applyCreditEl = document.getElementById("apply-credit");
+            function netCents(applyChecked) {
+                const price = Math.round({{.Product.Price}} * 100);
+                if (!applyChecked) return price;
+                let applied = Math.min({{.StoreCreditCents}}, price);
+                if (price - applied < 50) applied = Math.max(0, price - 50);
+                return price - applied;
+            }
+            function payLabel() {
+                return "Pay $" + (netCents(applyCreditEl && applyCreditEl.checked) / 100).toFixed(2);
+            }
+            if (applyCreditEl) {
+                applyCreditEl.addEventListener("change", function () { submitText.textContent = payLabel(); });
+                submitText.textContent = payLabel();
+            }
+
             form.addEventListener("submit", async function(e) {
                 e.preventDefault();
                 submitBtn.disabled = true;
@@ -356,10 +417,25 @@
 
                 try {
                     // Server derives amount from product_id — never trust client-side amounts.
+                    // guest_email is used only when there's no logged-in session.
+                    const emailEl = document.getElementById("stripe-email");
+                    const confirmEl = document.getElementById("stripe-email-confirm");
+                    if (confirmEl && emailEl) {
+                        // Guest typo guard: the two email fields must match before we
+                        // create a payment — a wrong address means a lost license key.
+                        if (emailEl.value.trim().toLowerCase() !== confirmEl.value.trim().toLowerCase()) {
+                            throw new Error("Those emails don't match — please re-enter to confirm.");
+                        }
+                    }
                     const resp = await fetch("/api/stripe/create-payment-intent", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ product_id: productID }),
+                        body: JSON.stringify({
+                            product_id: productID,
+                            guest_email: emailEl ? emailEl.value.trim() : "",
+                            guest_email_confirm: confirmEl ? confirmEl.value.trim() : "",
+                            apply_credit: applyCreditEl ? applyCreditEl.checked : false,
+                        }),
                     });
                     if (!resp.ok) {
                         const errData = await resp.json().catch(function() { return {}; });
@@ -376,7 +452,7 @@
                     }
                     if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
                         showMessage("Payment successful! Redirecting…", false);
-                        setTimeout(function() { window.location.href = "/download"; }, 1500);
+                        setTimeout(function() { window.location.href = "/success?ref=" + encodeURIComponent(result.paymentIntent.id) + "&product=" + encodeURIComponent(productID); }, 1500);
                     } else {
                         throw new Error("Payment did not succeed (status: " + (result.paymentIntent && result.paymentIntent.status) + ").");
                     }
@@ -384,7 +460,7 @@
                     console.error("Stripe error:", err);
                     errorEl.textContent = err.message || "Payment failed.";
                     submitBtn.disabled = false;
-                    submitText.textContent = "Pay ${{.Product.Price}}";
+                    submitText.textContent = payLabel();
                     submitSpinner.classList.add("hidden");
                 }
             });

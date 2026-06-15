@@ -15,3 +15,8 @@ func (NoopMailer) SendLicense(_ context.Context, to, licenseKey, productID strin
 	log.Printf("noop mailer: would send license %s for %s to %s", licenseKey, productID, to)
 	return nil
 }
+
+func (NoopMailer) SendReferralEarned(_ context.Context, to, amount, buyerEmail, productID string) error {
+	log.Printf("noop mailer: would send referral earned %s for %s (buyer %s) to %s", amount, productID, buyerEmail, to)
+	return nil
+}

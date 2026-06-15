@@ -14,12 +14,16 @@ type NavItem = {
   name: string;
   href: string;
   external?: boolean;
+  // reload: full-page navigation instead of a client-side route. Needed for
+  // server-rendered Go pages (e.g. /account) that the React router doesn't own.
+  reload?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
   { name: 'Home', href: '/' },
   { name: 'Products', href: '/products' },
   { name: 'About', href: '/about' },
+  { name: 'Affiliate', href: '/account' },
   { name: 'Discord', href: 'https://discord.com/invite/4TBUw4nBFd', external: true },
 ];
 
@@ -172,6 +176,21 @@ export default function AnimatedNav() {
                   className={className}
                   target="_blank"
                   rel="noopener noreferrer"
+                >
+                  {item.name}
+                </motion.a>
+              );
+            }
+            if (item.reload) {
+              // Plain anchor (no target) → full page load so the Go server
+              // renders /account rather than the SPA catch-all.
+              return (
+                <motion.a
+                  key={item.name}
+                  href={item.href}
+                  variants={itemVariants}
+                  onClick={(e) => e.stopPropagation()}
+                  className={className}
                 >
                   {item.name}
                 </motion.a>

@@ -107,3 +107,57 @@ func addressPart(s string) string {
 	}
 	return strings.TrimSpace(s)
 }
+
+func (m *ResendMailer) SendReferralEarned(ctx context.Context, to, amount, buyerEmail, productID string) error {
+	if to == "" {
+		return errors.New("recipient is required")
+	}
+
+	subject := fmt.Sprintf("You just earned %s from a referral!", amount)
+
+	htmlBody := fmt.Sprintf(`
+		<div style="font-family: Inter, system-ui, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #1c1c1f; color: #fff;">
+			<h1 style="color: #10b981;">Great news!</h1>
+			<p style="font-size: 16px; line-height: 1.5;">
+				Someone just purchased <strong>%s</strong> using your referral link.
+			</p>
+			<p style="font-size: 16px; line-height: 1.5;">
+				You've earned <strong style="color:#10b981;">%s</strong> in store credit.
+			</p>
+			<p style="font-size: 14px; color: #9ca3af;">
+				Buyer: %s<br>
+				The credit has been added to your account and will be automatically applied the next time you check out.
+			</p>
+			<p style="margin-top: 32px; font-size: 13px; color: #9ca3af;">
+				Keep sharing your link — every sale adds up.<br>
+				Need help? Reply to this email or contact %s.
+			</p>
+		</div>
+	`, html.EscapeString(productID), html.EscapeString(amount), html.EscapeString(buyerEmail), html.EscapeString(m.supportEmail))
+
+	textBody := fmt.Sprintf(
+		"Great news!\n\n"+
+			"Someone just purchased %s using your referral link.\n\n"+
+			"You've earned %s in store credit.\n\n"+
+			"Buyer: %s\n"+
+			"The credit has been added to your account and will be automatically applied the next time you check out.\n\n"+
+			"Keep sharing your link — every sale adds up.\n"+
+			"Need help? Reply to this email or contact %s.\n",
+		productID, amount, buyerEmail, m.supportEmail,
+	)
+
+	params := &resend.SendEmailRequest{
+		From:    m.from,
+		To:      []string{to},
+		Subject: subject,
+		Html:    htmlBody,
+		Text:    textBody,
+		ReplyTo: m.supportEmail,
+	}
+
+	_, err := m.client.Emails.SendWithContext(ctx, params)
+	if err != nil {
+		return fmt.Errorf("resend send referral: %w", err)
+	}
+	return nil
+}

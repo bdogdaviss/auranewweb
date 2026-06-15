@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/stripe/stripe-go/v78"
@@ -29,12 +30,17 @@ func NewStripeService() (*StripeService, error) {
 }
 
 type CreateIntentInput struct {
-	AmountCents int64
-	Currency    string
-	ProductID   string
-	ProductName string
-	UserID      string
-	UserEmail   string
+	AmountCents  int64
+	Currency     string
+	ProductID    string
+	ProductName  string
+	UserID       string
+	UserEmail    string
+	ReferralCode string
+	// AppliedCreditCents is store credit applied to this purchase. AmountCents is
+	// already the NET to charge; this rides along in metadata so the webhook can
+	// debit the buyer's balance after the payment settles.
+	AppliedCreditCents int64
 }
 
 type CreateIntentResult struct {
@@ -73,6 +79,16 @@ func (s *StripeService) CreatePaymentIntent(in CreateIntentInput) (*CreateIntent
 	// by a restart between purchase and webhook delivery.
 	if in.UserEmail != "" {
 		params.AddMetadata("user_email", in.UserEmail)
+	}
+	// referral_code rides along so the webhook can credit the referrer's store
+	// credit after a successful purchase (set from the buyer's "ref" cookie).
+	if in.ReferralCode != "" {
+		params.AddMetadata("referral_code", in.ReferralCode)
+	}
+	// applied_credit_cents lets the webhook debit the buyer's store credit once
+	// the payment settles (the discount was already applied to AmountCents).
+	if in.AppliedCreditCents > 0 {
+		params.AddMetadata("applied_credit_cents", strconv.FormatInt(in.AppliedCreditCents, 10))
 	}
 
 	pi, err := paymentintent.New(params)

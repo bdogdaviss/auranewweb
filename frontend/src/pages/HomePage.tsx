@@ -9,7 +9,16 @@ import CTASection from '../components/CTASection';
 import Reveal from '../components/Reveal';
 import Separator from '../components/Separator';
 import VouchedProof from '../components/VouchedProof';
+import UpsellBanner from '../components/UpsellBanner';
 import { FEATURED } from '../data/products';
+
+function CrownIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M2 7l5 5 5-7 5 7 5-5v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7z" />
+    </svg>
+  );
+}
 
 function ArrowIcon() {
   return (
@@ -26,6 +35,29 @@ export default function HomePage() {
       <Hero3DStage />
 
       <HexGrid />
+
+      <UpsellBanner
+        dismissId="home-lifetime"
+        title="Unlock Lifetime Pro — 85% off today"
+        message={
+          <>
+            You're running the free build. Go Pro for AI tuning, the FPS-boost guarantee &amp;
+            priority support — <a href="/pricing">save $84.99</a> with a one-time payment.
+          </>
+        }
+        imageData={{ kind: 'icon', component: <CrownIcon /> }}
+        primaryAction={{
+          label: 'Get Lifetime Pro',
+          accessibilityLabel: 'Upgrade to Aura Lifetime Pro',
+          href: '/checkout?product=lifetime',
+        }}
+        secondaryAction={{
+          label: 'See features',
+          accessibilityLabel: 'Compare Aura Optimizer plans',
+          href: '/pricing',
+        }}
+        dismissButton={{ accessibilityLabel: 'Dismiss the Lifetime Pro offer' }}
+      />
 
       {/* Subtle break between hero/dashboard and the Features intro lamp —
           the most important divider on the page. */}
@@ -59,18 +91,9 @@ export default function HomePage() {
           </div>
 
           <div className="featured-grid">
-            {FEATURED.map((p, i) =>
-              p.id === 'lifetime' ? (
-                // Lifetime card owns its own intersect animation (scale +
-                // blur + spring); skip the parent Reveal to avoid stacking
-                // two opacity/transform passes on the same element.
-                <FeaturedCard key={p.id} product={p} />
-              ) : (
-                <Reveal key={p.id} delay={i * 0.08} amount={0.15}>
-                  <FeaturedCard product={p} />
-                </Reveal>
-              )
-            )}
+            {FEATURED.map((p) => (
+              <FeaturedCard key={p.id} product={p} />
+            ))}
           </div>
 
           <div className="featured-view-all">

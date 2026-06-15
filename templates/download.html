@@ -198,6 +198,22 @@
 
     <!-- Hero Section - Exact spacing -->
     <section class="pt-28 pb-8 px-6">
+        <!-- Upsell: Free → Lifetime Pro -->
+        <div id="upsell-pro" class="max-w-3xl mx-auto mb-8 relative flex items-center gap-5 rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 to-white/[0.02] p-5">
+            <div class="shrink-0 w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l5 5 5-7 5 7 5-5v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7z"/></svg>
+            </div>
+            <div class="flex-1 text-left">
+                <h3 class="font-bold text-white">Squeeze out more FPS with Lifetime Pro</h3>
+                <p class="text-sm text-gray-400">The free build covers the basics. Pro adds AI tuning, the FPS-boost guarantee &amp; priority support — one-time <span class="text-emerald-400 font-semibold">$15</span> (was $99.99).</p>
+                <div class="flex gap-2 mt-3">
+                    <a href="/checkout?product=lifetime" class="btn-download">Upgrade to Pro</a>
+                    <a href="/pricing" class="btn-secondary">Compare plans</a>
+                </div>
+            </div>
+            <button onclick="document.getElementById('upsell-pro').remove()" aria-label="Dismiss the Lifetime Pro upgrade offer" class="absolute top-3 right-3 text-gray-500 hover:text-white">✕</button>
+        </div>
+
         <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-4xl sm:text-5xl font-bold mb-4 tracking-tight">
                 Aura <span class="text-gradient">Free</span> Optimizer

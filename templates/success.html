@@ -1,0 +1,86 @@
+<!-- templates/success.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase complete - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: { aura: {
+                50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#34d399',
+                500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b',950:'#022c22'
+            } }
+        } } }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; min-height: 100vh; }
+        .text-gradient { background: linear-gradient(135deg,#34d399,#10b981 50%,#059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .check-pop { animation: pop .4s cubic-bezier(.16,1,.3,1); }
+        @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .btn-primary { background: linear-gradient(135deg,#10b981,#059669); color:#fff; padding:12px 22px; border-radius:10px; font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:8px; transition:all .2s ease; box-shadow:0 6px 24px rgba(16,185,129,.3); }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn-ghost { background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:#e5e7eb; padding:12px 22px; border-radius:10px; font-weight:600; font-size:14px; transition:all .2s ease; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.09); }
+    </style>
+</head>
+<body class="flex items-center justify-center p-6">
+    <div class="fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_60%)] -z-10"></div>
+
+    <div class="w-full max-w-lg text-center">
+        <a href="/" class="inline-flex items-center gap-2 mb-10">
+            <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+            <span class="font-bold text-lg">Aura</span>
+        </a>
+
+        <!-- Success check -->
+        <div class="check-pop w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+            </svg>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl font-bold mb-3">
+            Successfully purchased <span class="text-gradient">{{.ProductName}}</span>!
+        </h1>
+        <p class="text-gray-400 leading-relaxed mb-2">
+            Your license key is on its way to your email — delivery can take a minute or two.
+            Check your inbox (and spam).
+        </p>
+        {{if .Ref}}
+        <p class="text-xs text-gray-600 mb-8">Order reference: <span class="font-mono text-gray-400">{{.Ref}}</span></p>
+        {{else}}
+        <div class="mb-8"></div>
+        {{end}}
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="/download" class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Aura Optimizer
+            </a>
+            <a href="/pricing" class="btn-ghost">Buy again</a>
+        </div>
+
+        <p class="text-xs text-gray-600 mt-8">
+            Didn't get the email? <a href="/recover" class="text-emerald-400 hover:text-emerald-300">Resend your license</a>.
+        </p>
+
+        <!-- Post-purchase upsell: refer & earn -->
+        <div class="mt-10 rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-white/[0.02] p-5 text-left flex items-center gap-4">
+            <div class="shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-semibold text-sm">Earn it back</h3>
+                <p class="text-xs text-gray-400">Refer friends and get <span class="text-emerald-400 font-semibold">$5.99</span> store credit per Pro sale.</p>
+            </div>
+            <a href="/account" class="bg-aura-500 hover:bg-aura-600 text-white text-xs font-semibold px-3 py-2 rounded-lg whitespace-nowrap">Get your link</a>
+        </div>
+    </div>
+</body>
+</html>

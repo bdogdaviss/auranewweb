@@ -1,0 +1,173 @@
+.upsell {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 20px 48px 20px 24px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.upsell-media {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upsell-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.upsell-media-img {
+  overflow: hidden;
+  border-radius: 12px;
+  line-height: 0;
+}
+
+.upsell-media-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.upsell-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.upsell-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.upsell-message {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.upsell-message a {
+  color: #34d399;
+  text-decoration: underline;
+}
+
+.upsell-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.upsell-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.upsell-btn-primary {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25);
+}
+
+.upsell-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.upsell-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.upsell-btn-secondary {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+}
+
+.upsell-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.upsell-dismiss {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.upsell-dismiss:hover {
+  color: #fff;
+}
+
+.upsell-form {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.upsell-form-fields {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.upsell-input {
+  flex: 1;
+  min-width: 160px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.upsell-input::placeholder {
+  color: #6b7280;
+}
+
+.upsell-input:focus {
+  outline: none;
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+@media (max-width: 640px) {
+  .upsell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .upsell-actions,
+  .upsell-form {
+    width: 100%;
+  }
+}

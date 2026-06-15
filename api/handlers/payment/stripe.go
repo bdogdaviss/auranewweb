@@ -1,12 +1,16 @@
 package payment
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"log"
 	"math"
 	"net/http"
+	"net/mail"
+	"strconv"
+	"strings"
 
 	"github.com/stripe/stripe-go/v78"
 
@@ -28,10 +32,25 @@ type Deps struct {
 	MarkUserPro   func(userID string)
 
 	// Durable layer (nil-safe; handler degrades gracefully if absent).
-	LicenseRepo repo.LicenseRepository
-	EventStore  repo.EventStore
-	Mailer      mailer.Mailer
+	LicenseRepo  repo.LicenseRepository
+	EventStore   repo.EventStore
+	Mailer       mailer.Mailer
+	ReferralRepo repo.ReferralRepository
+	UserRepo     repo.UserRepository
 }
+
+// ReferralCreditCents is the flat store credit awarded to a referrer for each
+// qualifying purchase made through their link.
+const ReferralCreditCents = 599
+
+// referralQualifyingProduct is the only product whose sale earns referral
+// credit (the "optimizer"). Other products do not pay out.
+const referralQualifyingProduct = "lifetime"
+
+// stripeMinChargeCents is Stripe's minimum charge ($0.50). When applying store
+// credit we leave at least this much to charge, so a redemption can't drive the
+// total below what Stripe will accept.
+const stripeMinChargeCents = 50
 
 type StripeHandler struct {
 	deps Deps
@@ -43,6 +62,54 @@ func NewStripeHandler(deps Deps) *StripeHandler {
 
 type createIntentRequest struct {
 	ProductID string `json:"product_id"`
+	// GuestEmail is used when the buyer is not logged in (guest checkout). It's
+	// where the license is delivered and the identity referral self-referral
+	// checks compare against. Ignored when a session is present.
+	GuestEmail string `json:"guest_email"`
+	// GuestEmailConfirm is sent from the client for guest checkout and must
+	// match GuestEmail (after normalization). This is enforced on the server
+	// (in addition to client-side check) to reduce typos and obvious abuse.
+	GuestEmailConfirm string `json:"guest_email_confirm"`
+	// ApplyCredit asks to spend the logged-in user's store credit on this
+	// purchase. The amount is computed server-side from the real balance — the
+	// client never dictates the discount.
+	ApplyCredit bool `json:"apply_credit"`
+}
+
+// normalizeEmail trims, validates, and lowercases an email address, returning
+// "" if it isn't a valid address.
+func normalizeEmail(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return ""
+	}
+	addr, err := mail.ParseAddress(s)
+	if err != nil {
+		return ""
+	}
+	return strings.ToLower(addr.Address)
+}
+
+// isDisposableEmail returns true for common throwaway/temporary email domains.
+// Add more as you encounter abuse. This is a simple first line of defense.
+func isDisposableEmail(email string) bool {
+	disposables := []string{
+		"mailinator.com", "tempmail.com", "10minutemail.com", "guerrillamail.com",
+		"yopmail.com", "maildrop.cc", "throwawaymail.com", "mailtemp.info",
+		"fakeinbox.com", "inbox.lv", "trashmail.com", "mailcatch.com",
+		"maildrop.cc", "mintemail.com", "mailinator.net",
+	}
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return false
+	}
+	domain := strings.ToLower(strings.TrimSpace(parts[1]))
+	for _, d := range disposables {
+		if domain == d || strings.HasSuffix(domain, "."+d) {
+			return true
+		}
+	}
+	return false
 }
 
 func (h *StripeHandler) CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
@@ -68,14 +135,65 @@ func (h *StripeHandler) CreatePaymentIntent(w http.ResponseWriter, r *http.Reque
 	if h.deps.GetUserID != nil {
 		userID, email = h.deps.GetUserID(r)
 	}
+	loggedIn := email != ""
+
+	// Guest checkout: with no logged-in session, fall back to the email entered
+	// on the form. An email is required either way — the webhook can't issue a
+	// license (or credit a referrer) without one.
+	if email == "" {
+		email = normalizeEmail(req.GuestEmail)
+	}
+	if email == "" {
+		writeJSONError(w, http.StatusBadRequest, "a valid email is required")
+		return
+	}
+
+	// Server-side enforcement of email confirmation for guest checkout.
+	// This prevents obvious typos and makes it slightly harder to abuse.
+	if !loggedIn {
+		confirm := normalizeEmail(req.GuestEmailConfirm)
+		if confirm == "" || confirm != email {
+			writeJSONError(w, http.StatusBadRequest, "email addresses do not match")
+			return
+		}
+	}
+
+	// Block common disposable / temporary email domains.
+	// This is not foolproof but catches a lot of throwaway addresses used for abuse.
+	if isDisposableEmail(email) {
+		writeJSONError(w, http.StatusBadRequest, "disposable email addresses are not allowed")
+		return
+	}
+
+	// Attribution: the referral code is captured into a first-party "ref" cookie
+	// when a visitor lands via someone's share link. Reading it server-side keeps
+	// the amount/identity authoritative — the client never sends a code we trust.
+	// Lowercase to match stored codes (always lowercased by sanitizeCode); a
+	// share link like /?ref=BdogBTW would otherwise never match and the referrer
+	// would silently go uncredited.
+	var referralCode string
+	if c, err := r.Cookie("ref"); err == nil {
+		referralCode = strings.ToLower(strings.TrimSpace(c.Value))
+	}
+
+	// Store-credit redemption (logged-in users only). The discount is computed
+	// here from the real balance and applied to the charged amount; the balance
+	// itself is debited in the webhook once the payment settles.
+	var appliedCents int64
+	if req.ApplyCredit && loggedIn && h.deps.UserRepo != nil {
+		appliedCents = h.computeAppliedCredit(r.Context(), email, product.ID, amountCents)
+	}
+	netCents := amountCents - appliedCents
 
 	result, err := h.deps.Service.CreatePaymentIntent(paysvc.CreateIntentInput{
-		AmountCents: amountCents,
-		Currency:    "usd",
-		ProductID:   product.ID,
-		ProductName: product.Name,
-		UserID:      userID,
-		UserEmail:   email,
+		AmountCents:        netCents,
+		Currency:           "usd",
+		ProductID:          product.ID,
+		ProductName:        product.Name,
+		UserID:             userID,
+		UserEmail:          email,
+		ReferralCode:       referralCode,
+		AppliedCreditCents: appliedCents,
 	})
 	if err != nil {
 		log.Printf("stripe create intent: %v", err)
@@ -84,6 +202,34 @@ func (h *StripeHandler) CreatePaymentIntent(w http.ResponseWriter, r *http.Reque
 	}
 
 	writeJSON(w, http.StatusOK, result)
+}
+
+// computeAppliedCredit decides how much store credit to apply to a purchase —
+// authoritative on the server. It returns 0 if the user already owns the
+// product (the one-license rule means they can't re-buy it, so credit would be
+// wasted); otherwise the balance capped at the price, always leaving at least
+// Stripe's minimum charge.
+func (h *StripeHandler) computeAppliedCredit(ctx context.Context, email, productID string, amountCents int64) int64 {
+	if h.deps.LicenseRepo != nil {
+		if lic, _ := h.deps.LicenseRepo.FindActive(ctx, email, productID); lic != nil {
+			return 0
+		}
+	}
+	u, err := h.deps.UserRepo.FindByEmail(ctx, email)
+	if err != nil || u == nil || u.StoreCreditCents <= 0 {
+		return 0
+	}
+	applied := u.StoreCreditCents
+	if applied > amountCents {
+		applied = amountCents
+	}
+	if amountCents-applied < stripeMinChargeCents {
+		applied = amountCents - stripeMinChargeCents
+	}
+	if applied < 0 {
+		applied = 0
+	}
+	return applied
 }
 
 // Webhook is the canonical idempotent flow for payment_intent.succeeded:
@@ -156,8 +302,13 @@ func (h *StripeHandler) Webhook(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
+		var license *repo.License
 		if h.deps.LicenseRepo != nil {
-			license, wasNew, err := h.deps.LicenseRepo.AssignFromPool(ctx, userEmail, productID, pi.ID)
+			var (
+				wasNew bool
+				err    error
+			)
+			license, wasNew, err = h.deps.LicenseRepo.AssignFromPool(ctx, userEmail, productID, pi.ID)
 			if errors.Is(err, repo.ErrPoolEmpty) {
 				// Out of inventory. Return 5xx so Stripe retries — by the
 				// time it retries, an admin should have run the import-keys
@@ -178,15 +329,65 @@ func (h *StripeHandler) Webhook(w http.ResponseWriter, r *http.Request) {
 			} else {
 				log.Printf("stripe webhook: reusing existing license %s for %s/%s on retry (event=%s)", license.Key, userEmail, productID, event.ID)
 			}
+		}
 
-			// Always attempt the email; processed_events at the top is what
-			// dedups duplicate sends. wasNew is logged for telemetry only.
-			if h.deps.Mailer != nil {
-				if err := h.deps.Mailer.SendLicense(ctx, userEmail, license.Key, productID); err != nil {
-					log.Printf("stripe webhook: send email (event=%s): %v", event.ID, err)
-					writeJSONError(w, http.StatusInternalServerError, "email send failed")
-					return
+		// Crediting + redemption run BEFORE the email so they always execute on
+		// the first successful pass — even if the email later fails and forces a
+		// Stripe retry. Both are idempotent (gated on event.ID), so a retry never
+		// double-credits or double-debits. (Previously these ran AFTER the email;
+		// a permanently-failing email skipped them, leaving the referrer
+		// uncredited and the buyer's applied store credit never debited.)
+		if h.deps.ReferralRepo != nil && productID == referralQualifyingProduct {
+			if code := pi.Metadata["referral_code"]; code != "" {
+				credited, err := h.deps.ReferralRepo.CreditReferral(ctx, repo.CreditReferralInput{
+					StripeEventID:   event.ID,
+					PaymentIntentID: pi.ID,
+					ReferralCode:    code,
+					BuyerEmail:      userEmail,
+					ProductID:       productID,
+					CreditCents:     ReferralCreditCents,
+				})
+				if err != nil {
+					log.Printf("stripe webhook: referral credit failed (event=%s code=%s): %v", event.ID, code, err)
+				} else if credited {
+					log.Printf("stripe webhook: credited %d¢ to referrer of code=%s (event=%s)", ReferralCreditCents, code, event.ID)
+
+					// Notify the referrer (best-effort; don't fail the webhook on email problems)
+					if h.deps.Mailer != nil && h.deps.UserRepo != nil {
+						if referrer, err := h.deps.UserRepo.FindByReferralCode(ctx, code); err == nil && referrer != nil {
+							_ = h.deps.Mailer.SendReferralEarned(ctx, referrer.Email, "$5.99", userEmail, productID)
+						}
+					}
 				}
+			}
+		}
+		if h.deps.ReferralRepo != nil {
+			if appliedStr := pi.Metadata["applied_credit_cents"]; appliedStr != "" {
+				if applied, perr := strconv.ParseInt(appliedStr, 10, 64); perr == nil && applied > 0 {
+					redeemed, err := h.deps.ReferralRepo.RedeemCredit(ctx, repo.RedeemInput{
+						StripeEventID:   event.ID,
+						PaymentIntentID: pi.ID,
+						Email:           userEmail,
+						ProductID:       productID,
+						AmountCents:     applied,
+					})
+					if err != nil {
+						log.Printf("stripe webhook: redeem credit failed (event=%s email=%s): %v", event.ID, userEmail, err)
+					} else if redeemed {
+						log.Printf("stripe webhook: redeemed %d¢ store credit from %s (event=%s)", applied, userEmail, event.ID)
+					}
+				}
+			}
+		}
+
+		// Email last. A transient failure returns 5xx so Stripe retries delivery;
+		// crediting/redemption above already happened idempotently. processed_events
+		// dedups duplicate sends on retry.
+		if license != nil && h.deps.Mailer != nil {
+			if err := h.deps.Mailer.SendLicense(ctx, userEmail, license.Key, productID); err != nil {
+				log.Printf("stripe webhook: send email (event=%s): %v", event.ID, err)
+				writeJSONError(w, http.StatusInternalServerError, "email send failed")
+				return
 			}
 		}
 

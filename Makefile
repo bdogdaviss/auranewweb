@@ -14,10 +14,10 @@ frontend: frontend-deps
 # you'll likely want `cd frontend && npm run dev` in a separate terminal — that
 # gets you HMR and proxies API calls to this server.
 run: deps frontend
-	go run main.go
+	go run .
 
 build: deps frontend
-	go build -o bin/aura-server main.go
+	go build -o bin/aura-server .
 
 clean:
 	rm -rf bin/ frontend/dist/

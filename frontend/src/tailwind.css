@@ -1,0 +1,24 @@
+/* Tailwind v4 — theme tokens + utilities only.
+ *
+ * Preflight (Tailwind's global base reset) is intentionally NOT imported so it
+ * can't restyle the existing theme.css-styled pages (theme.css already sets
+ * `* { box-sizing: border-box }` and base body/a/button styles). Imported
+ * UNLAYERED so utility classes (specificity 0,1,0) win over theme.css's base
+ * `a {}` / `button {}` element rules (0,0,1) on the new shadcn components. */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+
+/* Aura brand palette as Tailwind theme tokens → bg-aura-500, text-aura-400, … */
+@theme {
+  --color-aura-50: #f0fdf4;
+  --color-aura-100: #dcfce7;
+  --color-aura-200: #bbf7d0;
+  --color-aura-300: #86efac;
+  --color-aura-400: #34d399;
+  --color-aura-500: #10b981;
+  --color-aura-600: #059669;
+  --color-aura-700: #047857;
+  --color-aura-800: #065f46;
+  --color-aura-900: #064e3b;
+  --color-aura-950: #022c22;
+}

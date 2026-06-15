@@ -1,0 +1,130 @@
+<!-- templates/recover.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend License - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { sans: ['Inter', 'sans-serif'] },
+                colors: { aura: {
+                    50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#34d399',
+                    500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b',950:'#022c22'
+                } }
+            } }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; line-height: 1.5; }
+        ::selection { background: #059669; color: white; }
+        .text-gradient {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-blur { background: rgba(10,10,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 28px; }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;
+            padding: 12px 20px; border-radius: 8px; font-weight: 500; font-size: 14px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s ease; box-shadow: 0 4px 20px rgba(16,185,129,0.25); cursor: pointer; border: none;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(16,185,129,0.35); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="/" class="text-sm text-gray-400 hover:text-emerald-400 transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-emerald-400 transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-emerald-400 transition">Download</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-28 pb-16 px-6">
+        <div class="max-w-md mx-auto">
+            <h1 class="text-3xl font-bold mb-2 tracking-tight">Resend your <span class="text-gradient">license</span></h1>
+            <p class="text-gray-400 mb-8 text-sm">
+                Bought the optimizer but didn't get your key (or mistyped your email)? Enter the email
+                you used at checkout and we'll send your license again.
+            </p>
+
+            <div class="card">
+                <form id="recover-form" class="space-y-4">
+                    <div>
+                        <label for="recover-email" class="block text-xs text-gray-400 mb-1">Email used at purchase</label>
+                        <input type="email" id="recover-email" required autocomplete="email"
+                            placeholder="you@example.com"
+                            class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500/50" />
+                    </div>
+                    <button type="submit" id="recover-submit" class="btn-primary w-full">
+                        <span id="recover-text">Resend my license</span>
+                    </button>
+                </form>
+                <div id="recover-message" class="hidden mt-4 text-sm rounded-lg px-4 py-3"></div>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-6">
+                Have an account? <a href="/account" class="text-emerald-400 hover:text-emerald-300">Go to your dashboard</a>.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+        const form = document.getElementById("recover-form");
+        const btn = document.getElementById("recover-submit");
+        const btnText = document.getElementById("recover-text");
+        const msg = document.getElementById("recover-message");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("recover-email").value.trim();
+            btn.disabled = true;
+            btnText.textContent = "Sending…";
+            msg.classList.add("hidden");
+            try {
+                const resp = await fetch("/api/account/resend-by-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email }),
+                });
+                const data = await resp.json().catch(function () { return {}; });
+                if (!resp.ok) {
+                    throw new Error(data.error || "Something went wrong. Please try again.");
+                }
+                msg.textContent = data.status || "Done.";
+                msg.className = "mt-4 text-sm rounded-lg px-4 py-3 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20";
+            } catch (err) {
+                msg.textContent = err.message;
+                msg.className = "mt-4 text-sm rounded-lg px-4 py-3 bg-red-500/10 text-red-300 border border-red-500/20";
+            } finally {
+                msg.classList.remove("hidden");
+                btn.disabled = false;
+                btnText.textContent = "Resend my license";
+            }
+        });
+    </script>
+</body>
+</html>

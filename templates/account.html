@@ -1,0 +1,258 @@
+<!-- templates/account.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - Aura Optimizer</title>
+    <link rel="icon" href="/static/images/icon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: { aura: {
+                50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#34d399',
+                500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b',950:'#022c22'
+            } }
+        } } }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #1c1c1f; color: #fff; line-height: 1.5; }
+        ::selection { background: #059669; color: white; }
+        .text-gradient { background: linear-gradient(135deg,#34d399,#10b981 50%,#059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-blur { background: rgba(20,20,23,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .panel { background: #232327; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; }
+        .inset { background: #1a1a1d; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; }
+        .btn { background: linear-gradient(135deg,#10b981,#059669); color:#fff; padding:10px 16px; border-radius:8px; font-weight:500; font-size:13px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:none; transition:all .2s; }
+        .btn:hover { transform: translateY(-1px); }
+        .icon-btn { color:#9ca3af; cursor:pointer; }
+        .icon-btn:hover { color:#fff; }
+    </style>
+</head>
+<body class="antialiased">
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/static/images/icon.ico" alt="Aura" class="w-8 h-8 rounded-lg object-cover" />
+                    <span class="font-bold text-lg tracking-tight">Aura</span>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="/" class="text-sm text-gray-400 hover:text-emerald-400 transition">Home</a>
+                    <a href="/pricing" class="text-sm text-gray-400 hover:text-emerald-400 transition">Pricing</a>
+                    <a href="/download" class="text-sm text-gray-400 hover:text-emerald-400 transition">Download</a>
+                    <a href="/account" class="text-sm text-emerald-400 font-medium">Affiliate</a>
+                    <a href="/logout" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
+        <h1 class="text-2xl font-bold mb-8">Affiliate Dashboard</h1>
+
+        <!-- Upsell: cash-payout waitlist (single-field form) -->
+        <div id="upsell-payouts" class="relative flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 to-white/[0.02] p-5 mb-8">
+            <div class="shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-semibold text-white">Cash payouts are coming</h3>
+                <p class="text-sm text-gray-400">Today you earn store credit. Want to withdraw to your bank instead? Get notified when payouts launch.</p>
+            </div>
+            <form id="payout-waitlist" class="flex gap-2 w-full sm:w-auto">
+                <input id="payout-email" type="email" required placeholder="you@example.com" aria-label="Email for payout launch notification"
+                    class="flex-1 sm:w-56 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-aura-500/50" />
+                <button type="submit" class="bg-aura-500 hover:bg-aura-600 text-white text-sm font-semibold px-4 py-2 rounded-lg whitespace-nowrap">Notify me</button>
+            </form>
+            <button onclick="document.getElementById('upsell-payouts').remove()" aria-label="Dismiss the payouts notice" class="absolute top-2 right-2 text-gray-500 hover:text-white">✕</button>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- LEFT: Referrals -->
+            <div class="lg:col-span-2 space-y-6">
+                <h2 class="text-sm text-gray-400 font-medium">Referrals</h2>
+
+                <!-- Earnings -->
+                <div class="panel p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="font-semibold">Earnings</h3>
+                        <span class="inset px-3 py-1.5 text-xs text-gray-400">All time</span>
+                    </div>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        <div class="inset p-4">
+                            <p class="text-xs text-gray-500 mb-1">Available credit</p>
+                            <p class="text-2xl font-bold text-gradient">{{.CreditDisplay}}</p>
+                        </div>
+                        <div class="inset p-4">
+                            <p class="text-xs text-gray-500 mb-1">Total earned</p>
+                            <p class="text-2xl font-bold">{{.TotalEarnedDisplay}}</p>
+                        </div>
+                        <div class="inset p-4">
+                            <p class="text-xs text-gray-500 mb-1">Referrals</p>
+                            <p class="text-2xl font-bold">{{.ReferralCount}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code -->
+                <div class="panel p-6">
+                    <h3 class="font-semibold mb-4">Your code</h3>
+                    <div class="inset flex items-center gap-2 px-4 py-3">
+                        <input id="code-card-value" type="text" readonly value="{{.ReferralCode}}"
+                            class="flex-1 bg-transparent text-sm text-white tracking-wide uppercase focus:outline-none" />
+                        <i data-lucide="copy" class="w-4 h-4 icon-btn" onclick="copyVal('code-card-value')"></i>
+                    </div>
+                    <div class="flex gap-6 mt-3 text-xs text-gray-500">
+                        <span>Referrals: <span class="text-gray-300">{{.ReferralCount}}</span></span>
+                        <span>Earned: <span class="text-gray-300">{{.TotalEarnedDisplay}}</span></span>
+                    </div>
+                </div>
+
+                <!-- Referral link -->
+                <div class="panel p-6">
+                    <h3 class="font-semibold mb-4">Referral link</h3>
+                    <div class="inset flex items-center gap-2 px-4 py-3">
+                        <input id="ref-link-input" type="text" readonly value="{{.ReferralLink}}"
+                            class="flex-1 bg-transparent text-sm text-emerald-400 focus:outline-none" />
+                        <i data-lucide="copy" class="w-4 h-4 icon-btn" onclick="copyVal('ref-link-input')"></i>
+                    </div>
+                    <div class="flex gap-6 mt-3 text-xs text-gray-500">
+                        <span>Commission: <span class="text-gray-300">{{.CommissionDisplay}}</span> per sale</span>
+                        <span>Destination: <span class="text-gray-300">/</span></span>
+                    </div>
+                </div>
+
+                <!-- Referrals table -->
+                <div class="panel p-6">
+                    <h3 class="font-semibold mb-4">Referrals</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-xs text-gray-500 border-b border-white/10">
+                                    <th class="py-2 font-medium">Date</th>
+                                    <th class="py-2 font-medium">Product</th>
+                                    <th class="py-2 font-medium">Status</th>
+                                    <th class="py-2 font-medium text-right">Commission</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .Referrals}}
+                                <tr class="border-b border-white/5">
+                                    <td class="py-3 text-gray-300">{{.Date}}</td>
+                                    <td class="py-3 text-gray-300">{{.Product}}</td>
+                                    <td class="py-3"><span class="text-emerald-400 text-xs bg-emerald-500/10 px-2 py-0.5 rounded">{{.Status}}</span></td>
+                                    <td class="py-3 text-right text-gray-300">{{.Commission}}</td>
+                                </tr>
+                                {{else}}
+                                <tr><td colspan="4" class="py-8 text-center text-gray-600 text-sm">No referrals yet — share your link to start earning.</td></tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Details -->
+            <div class="space-y-6">
+                <h2 class="text-sm text-gray-400 font-medium">Details</h2>
+
+                <div class="panel p-6">
+                    <div class="flex items-center gap-3 mb-5">
+                        {{if .User.Avatar}}<img src="{{.User.Avatar}}" alt="" class="w-10 h-10 rounded-full" />{{end}}
+                        <div>
+                            <p class="font-semibold">{{.User.Name}}</p>
+                            <p class="text-xs text-gray-500">{{.User.Email}}</p>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-gray-500 mb-1">Social Name (this is your code)</p>
+                    <div class="flex items-center gap-2">
+                        <input id="social-name-input" type="text" value="{{.ReferralCode}}"
+                            class="inset flex-1 px-3 py-2 text-sm text-white focus:outline-none focus:border-aura-500/50" />
+                        <button class="btn" onclick="saveCode()">Save</button>
+                    </div>
+                    <p id="code-msg" class="text-xs mt-2 hidden"></p>
+
+                    <div class="border-t border-white/10 mt-5 pt-5">
+                        <p class="text-xs text-gray-500 mb-1">Commission</p>
+                        <p class="text-sm text-gray-300">{{.CommissionDisplay}} per referred sale</p>
+                    </div>
+                </div>
+
+                <div class="panel p-6">
+                    <p class="text-xs text-gray-500 mb-1">Payout</p>
+                    <p class="text-sm text-gray-300">Paid as <span class="text-emerald-400">store credit</span> — automatically applied at checkout on your next purchase.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Cash-payout waitlist — persists the email via /api/leads.
+        var waitlist = document.getElementById("payout-waitlist");
+        if (waitlist) {
+            waitlist.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                var emailEl = document.getElementById("payout-email");
+                var email = emailEl ? emailEl.value.trim() : "";
+                try {
+                    var resp = await fetch("/api/leads", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: email, source: "payout-waitlist" }),
+                    });
+                    if (!resp.ok) throw new Error("failed");
+                    waitlist.innerHTML = '<span class="text-emerald-400 text-sm">Thanks — you\'re on the list. We\'ll email you when payouts launch.</span>';
+                } catch (err) {
+                    var note = document.getElementById("payout-error");
+                    if (!note) {
+                        note = document.createElement("span");
+                        note.id = "payout-error";
+                        note.className = "text-red-400 text-sm ml-2";
+                        waitlist.appendChild(note);
+                    }
+                    note.textContent = "Couldn't save — try again.";
+                }
+            });
+        }
+
+        function copyVal(id) {
+            const el = document.getElementById(id);
+            el.select(); el.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(el.value);
+        }
+
+        async function saveCode() {
+            const input = document.getElementById("social-name-input");
+            const msg = document.getElementById("code-msg");
+            const code = input.value.trim();
+            msg.className = "text-xs mt-2 text-gray-400";
+            msg.textContent = "Saving…";
+            msg.classList.remove("hidden");
+            try {
+                const resp = await fetch("/api/account/referral-code", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code: code }),
+                });
+                const data = await resp.json().catch(function () { return {}; });
+                if (!resp.ok) throw new Error(data.error || "Could not save.");
+                document.getElementById("code-card-value").value = data.code;
+                document.getElementById("ref-link-input").value = data.link;
+                input.value = data.code;
+                msg.className = "text-xs mt-2 text-emerald-400";
+                msg.textContent = "Saved.";
+            } catch (err) {
+                msg.className = "text-xs mt-2 text-red-400";
+                msg.textContent = err.message;
+            }
+        }
+    </script>
+</body>
+</html>
