@@ -7,10 +7,10 @@ import { useDownloadModal } from './DownloadModalContext';
 // button and the Starter card's "Download Free" button can open it.
 
 const DOWNLOAD_URL =
-  'https://github.com/bdogdaviss/auranewweb/releases/download/v2.0.7/aura-setup.exe';
-const VERSION = 'v2.0.7';
+  'https://github.com/bdogdaviss/auranewweb/releases/download/v2.0.11/aura-setup.exe';
+const VERSION = 'v2.0.11';
 const FILE_NAME = 'aura-setup.exe';
-const FILE_SIZE = '165.6 MB';
+const FILE_SIZE = '166.7 MB';
 
 function CloseIcon() {
   return (
