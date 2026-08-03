@@ -22,3 +22,21 @@
   --color-aura-900: #064e3b;
   --color-aura-950: #022c22;
 }
+
+/* New marketing design (ported from the Next.js clone): display/mono fonts,
+ * ticker marquee animation, and the near-black token used by product CTAs. */
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Coolvetica", sans-serif;
+  --color-z-black: #050505;
+  --animate-ticker: ticker 28s linear infinite;
+
+  @keyframes ticker {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}

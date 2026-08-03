@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Background from './components/Background';
-import BackgroundRippleEffect from './components/BackgroundRippleEffect';
-import AnimatedNav from './components/AnimatedNav';
-import Footer from './components/Footer';
+import { CanvasBackground } from './components/design/CanvasBackground';
+import { SiteHeader } from './components/design/SiteHeader';
+import { SiteFooter } from './components/design/SiteFooter';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import AboutPage from './pages/AboutPage';
@@ -20,22 +19,23 @@ export default function App() {
     <BrowserRouter>
       <ToastProvider>
         <DownloadModalProvider>
-          <Background />
-          <BackgroundRippleEffect />
-          <AnimatedNav />
-          <main className="main-content" role="main">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/pricing" element={<ProductsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/account" element={<AccountPage />} />
-              <Route path="/ui" element={<UiShowcase />} />
-              <Route path="*" element={<HomePage />} />
-            </Routes>
-          </main>
-          <Footer />
-          <DownloadModal />
+          <div className="relative min-h-screen overflow-x-hidden">
+            <CanvasBackground />
+            <SiteHeader />
+            <main className="main-content relative z-10" role="main">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/pricing" element={<ProductsPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/account" element={<AccountPage />} />
+                <Route path="/ui" element={<UiShowcase />} />
+                <Route path="*" element={<HomePage />} />
+              </Routes>
+            </main>
+            <SiteFooter />
+            <DownloadModal />
+          </div>
         </DownloadModalProvider>
         <ToastContainer />
       </ToastProvider>
