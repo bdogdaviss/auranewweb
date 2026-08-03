@@ -156,9 +156,12 @@ export function HeroSection() {
               <div className="w-12" />
             </div>
             <div className="relative aspect-video bg-black overflow-hidden">
-              <img
-                src="/static/images/newdashboard.png"
-                alt="Aura Optimizer dashboard"
+              <video
+                src="/static/videos/aura-showcase.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
                 className="w-full h-full object-cover"
               />
               <div
