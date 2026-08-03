@@ -29,6 +29,7 @@ export default function App() {
                 <Route path="/pricing" element={<ProductsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/account" element={<AccountPage />} />
+                <Route path="/affiliate" element={<AccountPage />} />
                 <Route path="/ui" element={<UiShowcase />} />
                 <Route path="*" element={<HomePage />} />
               </Routes>

@@ -4,6 +4,7 @@ import type { ComponentType, SVGProps } from "react";
 import {
   AboutIcon,
   DiscordIcon,
+  GiftNavIcon,
   HomeIcon,
   InfoIcon,
   ProductsIcon,
@@ -19,6 +20,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/", icon: HomeIcon },
   { label: "Products", href: "/products", icon: ProductsIcon },
   { label: "About", href: "/about", icon: InfoIcon },
+  { label: "Affiliate", href: "/affiliate", icon: GiftNavIcon },
   { label: "Account", href: "/account", icon: AboutIcon },
 ];
 
