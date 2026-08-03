@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { ComponentType, SVGProps } from "react";
 import {
-  AboutIcon,
+  ContactIcon,
   DiscordIcon,
   GiftNavIcon,
   HomeIcon,
@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Products", href: "/products", icon: ProductsIcon },
   { label: "About", href: "/about", icon: InfoIcon },
   { label: "Affiliate", href: "/affiliate", icon: GiftNavIcon },
-  { label: "Account", href: "/account", icon: AboutIcon },
+  { label: "Contact", href: "/contact", icon: ContactIcon },
 ];
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import AboutPage from './pages/AboutPage';
 import AccountPage from './pages/AccountPage';
+import ContactPage from './pages/ContactPage';
 import UiShowcase from './pages/UiShowcase';
 import { DownloadModalProvider } from './components/DownloadModalContext';
 import DownloadModal from './components/DownloadModal';
@@ -30,6 +31,7 @@ export default function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/affiliate" element={<AccountPage />} />
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/ui" element={<UiShowcase />} />
                 <Route path="*" element={<HomePage />} />
               </Routes>
