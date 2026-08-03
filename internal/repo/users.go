@@ -49,6 +49,9 @@ type UserRepository interface {
 	// FindByEmail returns the user with this email, or nil.
 	FindByEmail(ctx context.Context, email string) (*User, error)
 
+	// FindByID returns the user with this id, or nil.
+	FindByID(ctx context.Context, id string) (*User, error)
+
 	// FindByReferralCode returns the user owning this referral code, or nil.
 	FindByReferralCode(ctx context.Context, code string) (*User, error)
 
@@ -185,6 +188,14 @@ func sanitizeCode(s string) string {
 func (r *sqliteUserRepo) FindByEmail(ctx context.Context, email string) (*User, error) {
 	return scanUser(r.db.QueryRowContext(ctx,
 		`SELECT `+userColumns+` FROM users WHERE email = ? LIMIT 1`, email))
+}
+
+func (r *sqliteUserRepo) FindByID(ctx context.Context, id string) (*User, error) {
+	if id == "" {
+		return nil, nil
+	}
+	return scanUser(r.db.QueryRowContext(ctx,
+		`SELECT `+userColumns+` FROM users WHERE id = ? LIMIT 1`, id))
 }
 
 func (r *sqliteUserRepo) FindByReferralCode(ctx context.Context, code string) (*User, error) {

@@ -3,6 +3,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -44,6 +45,7 @@ var (
 	userRepo     repo.UserRepository
 	referralRepo repo.ReferralRepository
 	leadRepo     repo.LeadRepository
+	sessionRepo  repo.SessionRepository
 )
 
 // publicBaseURL is the canonical origin used to build referral share links.
@@ -275,6 +277,10 @@ func main() {
 	userRepo = repo.NewUserRepository(sqlDB)
 	referralRepo = repo.NewReferralRepository(sqlDB)
 	leadRepo = repo.NewLeadRepository(sqlDB)
+	sessionRepo = repo.NewSessionRepository(sqlDB)
+	if err := sessionRepo.DeleteExpired(context.Background()); err != nil {
+		log.Printf("prune expired sessions: %v", err)
+	}
 	log.Printf("✅ SQLite ready at %s", getEnv("SQLITE_PATH", "./data/auranewweb.sqlite"))
 
 	// Email provider. Resend in prod; no-op (logs only) when not configured so
@@ -438,11 +444,44 @@ func getUser(r *http.Request) *User {
 	userID, ok := sessions[cookie.Value]
 	mu.RUnlock()
 	if !ok {
-		return nil
+		// In-memory miss (e.g. server restarted since login): fall back to the
+		// durable sessions table and re-cache.
+		if sessionRepo == nil {
+			return nil
+		}
+		dbUserID, dbErr := sessionRepo.GetUserID(r.Context(), cookie.Value)
+		if dbErr != nil || dbUserID == "" {
+			return nil
+		}
+		userID = dbUserID
+		mu.Lock()
+		sessions[cookie.Value] = userID
+		mu.Unlock()
 	}
 	mu.RLock()
 	user := users[userID]
 	mu.RUnlock()
+	if user != nil {
+		return user
+	}
+	// Rehydrate the in-memory user from the durable row (mirrors apiLogin).
+	if userRepo == nil {
+		return nil
+	}
+	dbUser, dbErr := userRepo.FindByID(r.Context(), userID)
+	if dbErr != nil || dbUser == nil {
+		return nil
+	}
+	user = &User{
+		ID:       dbUser.ID,
+		Email:    dbUser.Email,
+		Name:     dbUser.Name,
+		Avatar:   "https://ui-avatars.com/api/?name=" + dbUser.Email + "&background=10b981&color=fff",
+		JoinedAt: dbUser.CreatedAt,
+	}
+	mu.Lock()
+	users[user.ID] = user
+	mu.Unlock()
 	return user
 }
 
@@ -479,6 +518,11 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		delete(sessions, cookie.Value)
 		mu.Unlock()
+		if sessionRepo != nil {
+			if err := sessionRepo.Delete(r.Context(), cookie.Value); err != nil {
+				log.Printf("delete session: %v", err)
+			}
+		}
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session",
@@ -686,6 +730,11 @@ func startSession(w http.ResponseWriter, r *http.Request, userID string) {
 	mu.Lock()
 	sessions[token] = userID
 	mu.Unlock()
+	if sessionRepo != nil {
+		if err := sessionRepo.Create(r.Context(), token, userID, time.Now().Add(7*24*time.Hour)); err != nil {
+			log.Printf("persist session: %v", err)
+		}
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    token,
